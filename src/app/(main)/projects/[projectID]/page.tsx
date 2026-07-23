@@ -105,8 +105,6 @@ export default async function ProjectPage({ params }: Props) {
       </KpiGrid>
 
       <Section
-      title="Bids"
-      description="Manage bids for this project."
     >
         <ProjectBidsTable
           projectId={projectID}
