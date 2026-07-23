@@ -76,12 +76,22 @@ const calculatedBid = calculateBidTotals(
 <div className="flex flex-wrap gap-8 border-t border-slate-800 pt-4">
   <div>
   <p className="text-xs uppercase tracking-wide text-slate-400">
-    Shot Count
+    Bid Name
   </p>
   <p className="text-2xl font-semibold">
-    {calculatedBid.totals.shotCount.toLocaleString()}
+      {bid.name}
   </p>
 </div>
+
+<div>
+    <p className="text-xs uppercase tracking-wide text-slate-400">
+    Shot Count
+    </p>
+    <p className="text-2xl font-semibold">
+    {calculatedBid.totals.shotCount.toLocaleString()}
+    </p>
+</div>
+
 
 <div>
     <p className="text-xs uppercase tracking-wide text-slate-400">

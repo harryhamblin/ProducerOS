@@ -4,6 +4,12 @@ import { notFound } from "next/navigation";
 import { CreateBidButton } from "@/components/bids/CreateBidButton";
 import { getCalculatedBids } from "@/lib/bids/getCalculatedBids";
 import { getProject } from "@/lib/projects";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { createProject } from "@/lib/projects";
+import { createNewBid } from "@/actions/bids";
+import { FolderOpen } from "lucide-react";
+import { EditableCell } from "@/components/editable/EditableCell";
 
 type Props = {
   params: Promise<{
@@ -53,6 +59,10 @@ export default async function ProjectPage({ params }: Props) {
     <main className="flex h-full flex-col overflow-hidden">
       <div className="border-b border-slate-800 bg-slate-950 px-8 py-6">
         <div className="flex items-center justify-between">
+          <Link
+      href={`/projects/${project.id}`}
+      title="Return to Project"
+    >
           <div>
             <h1 className="text-2xl font-semibold text-white">
               {project.name}
@@ -62,6 +72,7 @@ export default async function ProjectPage({ params }: Props) {
               {project.code}
             </p>
           </div>
+    </Link>
         </div>
       </div>
 
@@ -78,21 +89,21 @@ export default async function ProjectPage({ params }: Props) {
 
         <div className="border-r border-slate-800 px-6 py-5">
           <p className="text-xs uppercase tracking-wide text-slate-400">
-            Labour
-          </p>
-
-          <p className="mt-2 text-3xl font-semibold">
-            {currency.format(labour)}
-          </p>
-        </div>
-
-        <div className="border-r border-slate-800 px-6 py-5">
-          <p className="text-xs uppercase tracking-wide text-slate-400">
             Foreign Spend
           </p>
 
           <p className="mt-2 text-3xl font-semibold">
             {currency.format(foreignSpend)}
+          </p>
+        </div>
+
+        <div className="border-r border-slate-800 px-6 py-5">
+          <p className="text-xs uppercase tracking-wide text-slate-400">
+            Foreign Spend %
+          </p>
+
+          <p className="mt-2 text-3xl font-semibold">
+            {foreignSpend !== 0 ? ((foreignSpend / totalAward) * 100).toFixed(2) : "0.00"}%
           </p>
         </div>
 
@@ -112,7 +123,10 @@ export default async function ProjectPage({ params }: Props) {
           <thead className="sticky top-0 z-10 bg-slate-950">
             <tr className="border-b border-slate-800">
               <th className="px-6 py-3 text-left font-medium text-slate-400">
-                Bid
+                Open
+              </th>
+              <th className="px-6 py-3 text-left font-medium text-slate-400">
+                Bid Name
               </th>
 
               <th className="px-4 py-3 text-left font-medium text-slate-400">
@@ -123,19 +137,15 @@ export default async function ProjectPage({ params }: Props) {
                 Status
               </th>
 
-              <th className="px-4 py-3 text-right font-medium text-slate-400">
+              <th className="px-4 py-3 text-left font-medium text-slate-400">
                 Shots
               </th>
 
-              <th className="px-4 py-3 text-right font-medium text-slate-400">
-                Labour
+              <th className="px-4 py-3 text-left font-medium text-slate-400">
+                Foreign Spend
               </th>
 
-              <th className="px-4 py-3 text-right font-medium text-slate-400">
-                Foreign
-              </th>
-
-              <th className="px-6 py-3 text-right font-medium text-slate-400">
+              <th className="px-6 py-3 text-left font-medium text-slate-400">
                 Total
               </th>
             </tr>
@@ -146,53 +156,81 @@ export default async function ProjectPage({ params }: Props) {
                 key={bid.id}
                 className="border-b border-slate-800 transition-colors hover:bg-slate-900/40"
               >
-                <td className="px-6 py-3 font-medium">
-                  <Link
-                    href={`/projects/${project.id}/bids/${bid.id}`}
-                    className="transition-colors hover:text-blue-400"
-                  >
-                    {bid.name}
-                  </Link>
-                </td>
+<td  className="px-4 py-3 text-left">
+<div className="flex items-center gap-0">
+  <Link
+  href={`/projects/${projectID}/bids/${bid.id}`}
+  className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-slate-800 hover:text-white"
+  title="Open Bid"
+  >
+  <FolderOpen className="h-4 w-4" />
+  </Link>
+</div>
+</td>
+<td className="px-4 py-3 text-left">
+<div className="flex items-center gap-0">
+<EditableCell
+table="bids"
+rowId={bid.id}
+field="name"
+value={bid.name}
+type="text"
+revalidatePath="/bids"
+/>
+</div>
+</td>
+<td className="px-4 py-3 text-left">
+<div className="flex items-center gap-0">
+<EditableCell
+table="bids"
+rowId={bid.id}
+field="name"
+value={bid.version}
+type="text"
+revalidatePath="/bids"
+/>
+</div>
+</td>
 
-                <td className="px-4 py-3 text-slate-300">
-                  {bid.version}
-                </td>
-
-                <td className="px-4 py-3">
+<td className="px-4 py-3">
   <span className="inline-flex rounded-full bg-slate-800 px-2 py-1 text-xs text-slate-300">
     {bid.status ?? "Unknown"}
   </span>
 </td>
 
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-left">
                   {bid.totals.shotCount}
                 </td>
 
-                <td className="px-4 py-3 text-right">
-                  {currency.format(bid.totals.labourCost)}
-                </td>
-
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-left">
                   {currency.format(bid.totals.foreignSpend)}
                 </td>
 
-                <td className="px-6 py-3 text-right font-medium">
+                <td className="px-6 py-3 text-left font-medium">
                   {currency.format(bid.totals.grandTotal)}
                 </td>
               </tr>
             ))}
 
-            <tr>
-              <td
-                colSpan={7}
-                className="border-t border-dashed border-slate-700 p-0"
-              >
-                <div className="flex justify-center py-3">
-                  <CreateBidButton projectId={project.id} />
-                </div>
-              </td>
-            </tr>
+<tr>
+  <td colSpan={999} className="border-t border-dashed border-slate-700 p-0">
+    <form
+  action={async () => {
+    "use server";
+    await createNewBid(project.id);
+  }}
+>
+  <Button
+    type="submit"
+    variant="outline"
+    className="w-full justify-center border-dashed"
+  >
+    <Plus className="mr-2 h-4 w-4" />
+    Add Bid
+  </Button>
+</form>
+  </td>
+</tr>
           </tbody>
         </table>
       </div>

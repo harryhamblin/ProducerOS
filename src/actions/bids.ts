@@ -2,18 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createBid } from "@/lib/bids";
+import { createBid } from "../lib/bids";
 
-export async function createBidAction(
-  projectId: string,
-  formData: FormData
-) {
+export async function createNewBid(projectId: string) {
   await createBid(projectId, {
-    name: formData.get("name") as string,
-    version: Number(formData.get("version")),
-    status: formData.get("status") as string,
-    currency: formData.get("currency") as string,
-    notes: (formData.get("notes") as string) || "",
+    name: "New Bid",
+    version: 1,
+    status: "Draft",
+    currency: "GBP",
+    notes: "",
   });
 
   revalidatePath(`/projects/${projectId}`);

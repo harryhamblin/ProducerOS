@@ -32,7 +32,7 @@ export async function getProjects() {
                 colour
             )
             `)
-    .order("name");
+    .order("name", { ascending: true });
 
   if (error) {
     console.error("Error fetching projects:", error);
@@ -83,10 +83,11 @@ export async function createProject(input: CreateProjectInput) {
     .select()
     .single();
 
-  if (error) {
-    console.error("Error creating project:", error);
-    throw error;
-  }
+if (error) {
+  console.error("PROJECT INSERT ERROR");
+  console.error(JSON.stringify(error, null, 2));
+  throw new Error(JSON.stringify(error));
+}
 
   const { data: tasks, error: tasksError } = await supabase
     .from("tasks")

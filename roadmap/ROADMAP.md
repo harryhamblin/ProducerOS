@@ -34,3 +34,31 @@
 - [ ] User Settings
 - [ ] Dashboard Widgets
 - [ ] Performance Optimisation
+
+Sprint 3
+
+✅ Editable cells
+Column definitions
+Autosave
+
+Sprint 4
+
+✅ Task integrity
+Missing task repair
+Better project creation
+
+Sprint 5
+
+✅ Archive/delete
+Confirmation dialogs
+Undo support (if practical)
+
+Sprint 6
+
+Filters
+Search
+Sorting
+Frozen first column
+Keyboard navigation
+Copy/paste from Excel
+Multi-row selection
