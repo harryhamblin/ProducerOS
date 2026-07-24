@@ -244,7 +244,8 @@ export default function BidItemsTable({
                 );
               })
             )}
-          </tbody>  <tfoot>
+          </tbody>
+      <tfoot>
   <tr>
     <td
       colSpan={
