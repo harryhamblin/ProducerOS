@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { createNewBid } from "@/actions/bids";
+import { createNewBid } from "@/actions/bids/bids";
 
 import { Button } from "@/components/ui/button";
 import {

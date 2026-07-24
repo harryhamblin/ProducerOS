@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProject } from "@/lib/projects";
+import { getProject } from "@/lib/projects/getProjects";
 
 type Props = {
   params: Promise<{

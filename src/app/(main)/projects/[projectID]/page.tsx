@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 
 import { CreateBidButton } from "@/components/bids/CreateBidButton";
 import { getCalculatedBids } from "@/lib/bids/getCalculatedBids";
-import { getProject } from "@/lib/projects";
+import { getProject } from "@/lib/projects/getProjects";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { createProject } from "@/lib/projects";
+import { createProject } from "@/lib/projects/getProjects";
 import { createNewBid } from "@/actions/bids";
 import { FolderOpen } from "lucide-react";
 import { EditableCell } from "@/components/editable/EditableCell";
@@ -14,8 +14,9 @@ import { DetailHeader } from "@/components/layout/DetailHeader";
 import { KpiCard } from "@/components/layout/KpiCard";
 import { KpiGrid } from "@/components/layout/KpiGrid";
 import { PageLayout } from "@/components/layout/PageLayout";
-import { ProjectBidsTable } from "@/components/projects/ProjectBidsTable";
+import { ProjectBidsTable } from "@/components/bids/BidsTable";
 import { Section } from "@/components/layout/Section";
+import { CalculatedBid } from "@/types/bid";
 
 type Props = {
   params: Promise<{
@@ -41,23 +42,23 @@ export default async function ProjectPage({ params }: Props) {
     maximumFractionDigits: 0,
   });
 
-  const shotCount = bids.reduce(
-    (sum, bid) => sum + (bid.totals.shotCount ?? 0),
-    0
-  );
+const shotCount = bids.reduce(
+  (sum: number, bid: CalculatedBid) => sum + (bid.totals.shotCount ?? 0),
+  0
+);
 
   const labour = bids.reduce(
-    (sum, bid) => sum + (bid.totals.labourCost ?? 0),
+    (sum: number, bid: CalculatedBid) => sum + (bid.totals.labourCost ?? 0),
     0
   );
 
   const foreignSpend = bids.reduce(
-    (sum, bid) => sum + (bid.totals.foreignSpend ?? 0),
+    (sum: number, bid: CalculatedBid) => sum + (bid.totals.foreignSpend ?? 0),
     0
   );
 
   const totalAward = bids.reduce(
-    (sum, bid) => sum + (bid.totals.grandTotal ?? 0),
+    (sum: number, bid: CalculatedBid) => sum + (bid.totals.grandTotal ?? 0),
     0
   );
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateBidShot } from "@/app/(main)/projects/[projectID]/bids/[bidID]/actions";
+import { updateBidShot } from "@/actions/bids/actions";
 
 type Props = {
   projectID: string;

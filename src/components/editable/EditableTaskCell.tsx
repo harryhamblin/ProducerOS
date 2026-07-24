@@ -1,22 +1,22 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { updateBidTask } from "@/app/(main)/projects/[projectID]/bids/[bidID]/actions";
+import { updateCell } from "@/actions/editable/updateCell";
 
 type Props = {
-  projectID: string;
-  bidID: string;
-  bidShotID: string;
-  taskID: number;
+  table: string;
+  rowId: string | number;
+  field: string;
   value: number;
+  revalidatePath?: string;
 };
 
 export default function EditableTaskCell({
-  projectID,
-  bidID,
-  bidShotID,
-  taskID,
+  table,
+  rowId,
+  field,
   value,
+  revalidatePath,
 }: Props) {
   const [editing, setEditing] = useState(false);
   const [current, setCurrent] = useState(value.toString());
@@ -36,13 +36,13 @@ export default function EditableTaskCell({
     }
 
     startTransition(async () => {
-      await updateBidTask(
-        projectID,
-        bidID,
-        bidShotID,
-        taskID,
-        isNaN(newValue) ? 0 : newValue
-      );
+      await updateCell({
+        table,
+        rowId,
+        field,
+        value: isNaN(newValue) ? 0 : newValue,
+        revalidatePath,
+      });
     });
   }
 

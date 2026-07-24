@@ -2,8 +2,8 @@ import Link from "next/link";
 
 import { CreateProjectButton } from "@/components/projects/CreateProjectButton";
 import { getForeignSpendPercentage } from "@/lib/project-calculations";
-import { getProjects } from "@/lib/projects";
-import { createProject } from "@/lib/projects";
+import { getProjects } from "@/lib/projects/getProjects";
+import { createProject } from "@/lib/projects/getProjects";
 import { createNewProject } from "@/actions/projects";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";

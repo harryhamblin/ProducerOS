@@ -1,36 +1,42 @@
-import type { Database } from "@/lib/database.types";
-
-type BidShot = Database["public"]["Tables"]["bid_shots"]["Row"];
-type BidTask = Database["public"]["Tables"]["bid_tasks"]["Row"];
-type Task = Database["public"]["Tables"]["tasks"]["Row"];
-type RateCard = Database["public"]["Tables"]["rate_cards"]["Row"];
-
-export type CalculatedShot = BidShot & {
-  labourCost: number;
-  grandTotal: number;
-};
-
-export type CalculatedBid = {
-  shots: CalculatedShot[];
-  labourCost: number;
-  foreignSpend: number;
-  grandTotal: number;
-  shotCount: number;
-};
+import type {
+  BidShot,
+  BidTask,
+  ProjectTask,
+  CalculatedBid,
+  CalculatedShot,
+} from "@/types/bid";
 
 type Props = {
   shots: BidShot[];
   bidTasks: BidTask[];
-  tasks: Task[];
-  rateCards: RateCard[];
+  projectTasks: ProjectTask[];
 };
 
 export function calculateBid({
   shots,
   bidTasks,
-  tasks,
-  rateCards,
+  projectTasks,
 }: Props): CalculatedBid {
+  // task_id -> daily_rate
+  const rateLookup = new Map<number, number>();
+
+  for (const task of projectTasks) {
+    rateLookup.set(task.task_id, task.daily_rate);
+  }
+
+  // bid_shot_id -> bid tasks
+  const tasksByShot = new Map<string, BidTask[]>();
+
+  for (const task of bidTasks) {
+    const existing = tasksByShot.get(task.bid_shot_id);
+
+    if (existing) {
+      existing.push(task);
+    } else {
+      tasksByShot.set(task.bid_shot_id, [task]);
+    }
+  }
+
   const calculatedShots: CalculatedShot[] = [];
 
   let labourCost = 0;
@@ -40,24 +46,14 @@ export function calculateBid({
   for (const shot of shots) {
     let shotLabour = 0;
 
-    const shotTasks = bidTasks.filter(
-      (task) => task.bid_shot_id === shot.id
-    );
+    const shotTasks = tasksByShot.get(shot.id) ?? [];
 
     for (const bidTask of shotTasks) {
-      const task = tasks.find((t) => t.id === bidTask.task_id);
-
-      if (!task) continue;
-
-      const rate = rateCards.find(
-        (r) => r.task_id === task.id
-      );
-
-      if (!rate) continue;
+      const dailyRate =
+        rateLookup.get(bidTask.task_id) ?? 0;
 
       shotLabour +=
-        (bidTask.duration_days ?? 0) *
-        (rate.day_rate ?? 0);
+        (bidTask.duration_days ?? 0) * dailyRate;
     }
 
     const shotForeign = shot.foreign_spend ?? 0;
@@ -79,9 +75,11 @@ export function calculateBid({
 
   return {
     shots: calculatedShots,
-    labourCost,
-    foreignSpend,
-    grandTotal,
-    shotCount: shots.length,
+    totals: {
+      shotCount: calculatedShots.length,
+      labourCost,
+      foreignSpend,
+      grandTotal,
+    },
   };
 }

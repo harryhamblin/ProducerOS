@@ -1,12 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/database";
 
-export type BidTask = {
-  id: string;
-  bid_shot_id: string;
-  task_id: number;
-  duration_days: number;
-  notes: string | null;
-};
+export type BidTask =
+  Database["public"]["Tables"]["bid_tasks"]["Row"];
 
 export async function getBidTasks(bidID: string) {
   const supabase = await createClient();
@@ -15,6 +11,7 @@ export async function getBidTasks(bidID: string) {
     .from("bid_tasks")
     .select(`
       id,
+      created_at,
       bid_shot_id,
       task_id,
       duration_days,
@@ -25,24 +22,25 @@ export async function getBidTasks(bidID: string) {
     `)
     .eq("bid_shots.bid_id", bidID);
 
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
 
   const lookup = new Map<string, Map<number, BidTask>>();
 
-  for (const row of (data ?? []) as any[]) {
-    if (!lookup.has(row.bid_shot_id)) {
-      lookup.set(row.bid_shot_id, new Map());
+  for (const row of data ?? []) {
+    const task: BidTask = {
+      id: row.id,
+      created_at: row.created_at,
+      bid_shot_id: row.bid_shot_id,
+      task_id: row.task_id,
+      duration_days: row.duration_days,
+      notes: row.notes,
+    };
+
+    if (!lookup.has(task.bid_shot_id)) {
+      lookup.set(task.bid_shot_id, new Map());
     }
 
-    lookup.get(row.bid_shot_id)!.set(Number(row.task_id), {
-      id: row.id,
-      bid_shot_id: row.bid_shot_id,
-      task_id: Number(row.task_id),
-      duration_days: Number(row.duration_days ?? 0),
-      notes: row.notes,
-    });
+    lookup.get(task.bid_shot_id)!.set(task.task_id, task);
   }
 
   return lookup;

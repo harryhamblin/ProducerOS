@@ -1,7 +1,7 @@
-import { getBids } from "@/lib/bids";
-import { getBidShots } from "@/lib/bidShots";
-import { getBidTasks } from "@/lib/bidTasks";
-import { getProjectTasks } from "@/lib/projectTasks";
+import { getBids } from "@/lib/bids/getBid";
+import { getBidShots } from "@/lib/bids/getBidShots";
+import { getBidTasks } from "@/lib/bids/getBidTasks";
+import { getProjectTasks } from "@/lib/projects/getProjectTasks";
 import { calculateBidTotals } from "@/lib/bids/calculateBidTotals";
 
 export async function getCalculatedBids(projectID: string) {

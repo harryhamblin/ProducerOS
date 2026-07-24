@@ -7,10 +7,10 @@ const currencyFormatter = new Intl.NumberFormat("en-GB", {
 });
 
 export function formatDisplayValue(
-  value: string | number | null,
+  value: string | number | null | undefined,
   type: EditableType = "text"
 ): string {
-  if (value === null || value === "") {
+  if (value == null || value === "") {
     return "—";
   }
 
@@ -25,19 +25,25 @@ export function formatDisplayValue(
       return Number(value).toLocaleString();
 
     case "date":
-      return new Date(value.toString()).toLocaleDateString("en-GB");
+      return new Date(String(value)).toLocaleDateString("en-GB");
 
     default:
-      return value.toString();
+      return String(value);
   }
 }
 
-export function formatEditorValue(
-  value: string | number | null
-): string {
-  if (value === null) {
+export function formatEditorValue(value: unknown) {
+  if (value === null || value === undefined) {
     return "";
   }
 
-  return value.toString();
+  if (typeof value === "number") {
+    return value.toString();
+  }
+
+  if (typeof value === "boolean") {
+    return value ? "true" : "false";
+  }
+
+  return String(value);
 }

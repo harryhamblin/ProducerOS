@@ -1,7 +1,7 @@
 export const cost_type = [
-  "Full Cost",
-  "Additional",
-] as const;
+  { label: "Full Cost", value: "Full Cost" },
+  { label: "Additional", value: "Additional" },
+];
 
 export type CostType = (typeof cost_type)[number];
 
