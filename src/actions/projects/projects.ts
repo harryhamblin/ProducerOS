@@ -4,11 +4,11 @@ import { revalidatePath } from "next/cache";
 import { createProject } from "@/lib/projects/getProjects";
 
 export async function createNewProject() {
-  const code = `PRJ-${Date.now().toString().slice(-6)}`;
+  const projectCode = `PRJ-${Date.now().toString().slice(-6)}`;
 
   await createProject({
-    name: "New Project",
-    code,
+    project_name: "New Project",
+    project_code: projectCode,
   });
 
   revalidatePath("/projects");

@@ -81,7 +81,7 @@ export function ProjectsTable({
                   table="projects"
                   rowId={project.id}
                   field="name"
-                  value={project.name}
+                  value={project.project_name}
                   type="text"
                   revalidatePath="/projects"
                 />
@@ -91,7 +91,7 @@ export function ProjectsTable({
                 table="projects"
                 rowId={project.id}
                 field="code"
-                value={project.code}
+                value={project.project_code}
                 editable
                 type="text"
                 revalidatePath="/projects"

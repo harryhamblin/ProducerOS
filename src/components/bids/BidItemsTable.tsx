@@ -190,9 +190,7 @@ export default function BidItemsTable({
                     </td>
 
                     {projectTasks.map((task) => {
-                      const taskData = taskLookup.get(
-                        Number(task.task_id)
-                      );
+                      const taskData = taskLookup.get(task.id);
 
                       return (
                         <td

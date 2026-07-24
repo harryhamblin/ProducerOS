@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Project } from "@/types/project";
 
 export async function getProjects() {
   const supabase = await createClient();
@@ -13,7 +14,7 @@ export async function getProjects() {
                 colour
             )
             `)
-    .order("name", { ascending: true });
+    .order("project_name", { ascending: true });
 
   if (error) {
     console.error("Error fetching projects:", error);
@@ -40,64 +41,48 @@ throw error;
 }
 
 type CreateProjectInput = {
-  name: string;
-  code: string;
+  project_name: string;
+  project_code: string;
   status_id?: number;
   current_award?: number;
   foreign_spend?: number;
-  item_count?: number;
+  shot_count?: number;
 };
 
 export async function createProject(input: CreateProjectInput) {
+  console.log("================================");
+  console.log("CREATE PROJECT CALLED");
+  console.log(input);
+  console.log("project_name =", input.project_name);
+  console.log("project_code =", input.project_code);
+  console.log("================================");
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("projects")
     .insert({
-      name: input.name,
-      code: input.code,
+      project_name: input.project_name,
+      project_code: input.project_code,
       status_id: input.status_id ?? 1,
       current_award: input.current_award ?? null,
       foreign_spend: input.foreign_spend ?? null,
-      item_count: input.item_count ?? null,
+      shot_count: input.shot_count ?? null,
     })
     .select()
     .single();
 
-if (error) {
-  console.error("PROJECT INSERT ERROR");
-  console.error(JSON.stringify(error, null, 2));
-  throw new Error(JSON.stringify(error));
-}
-
-  const { data: tasks, error: tasksError } = await supabase
-    .from("tasks")
-    .select("id");
-
-  if (tasksError) {
-    console.error("Error fetching tasks:", tasksError);
-    throw tasksError;
+  if (error) {
+    console.error(error);
+    throw new Error(JSON.stringify(error));
   }
-
-  const rates = tasks.map((task) => ({
-    project_id: data.id,
-    task_id: task.id,
-    daily_rate: 0,
-  }));
-
-if (rates.length > 0) {
-  const { error: ratesError } = await supabase
-    .from("project_task_rates")
-    .insert(rates);
-
-  if (ratesError) {
-    console.error("Error creating project task rates:", ratesError);
-    throw ratesError;
-  }
-}
 
   return data as Project;
 }
+
+
+
+
 type UpdateProjectInput = Partial<CreateProjectInput>;
 
 export async function updateProject(

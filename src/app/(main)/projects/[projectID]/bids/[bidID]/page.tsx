@@ -36,7 +36,7 @@ export async function generateMetadata({
   return {
     title:
       project && bid
-        ? `${bid.name} - ${project.code}`
+        ? `${bid.name} - ${project.project_code}`
         : "ProducerOS",
   };
 }
@@ -52,6 +52,7 @@ export default async function BidPage({ params }: Props) {
   }
 
   const projectTasks = await getProjectTasks(projectID);
+  console.log(projectTasks);
   const bidItems = await getBidItems(bidID);
   const bidTasks = await getBidTasks(bidID);
 
@@ -72,7 +73,7 @@ export default async function BidPage({ params }: Props) {
             href: "/projects",
           },
           {
-            label: project.name,
+            label: project.project_name,
             href: `/projects/${projectID}`,
           },
           {
@@ -124,6 +125,7 @@ export default async function BidPage({ params }: Props) {
         projectTasks={projectTasks}
         calculatedBid={calculatedBid}
       />
+      
     </PageLayout>
   );
 }

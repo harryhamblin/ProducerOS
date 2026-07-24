@@ -1,7 +1,7 @@
 export type Project = {
   id: string;
-  name: string;
-  code: string;
+  project_name: string;
+  project_code: string;
   status_id: number;
   status: ProjectStatus;
   current_award: number | null;

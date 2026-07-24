@@ -58,39 +58,37 @@ export default async function ProjectPage({ params }: Props) {
     currency: "GBP",
     maximumFractionDigits: 0,
   });
-
 const itemCount = bids.reduce(
-  (sum: number, bid: CalculatedBid) => sum + (bid.totals.itemCount ?? 0),
+  (sum, bid) => sum + (bid.totals.itemCount ?? 0),
   0
 );
 
-  const labour = bids.reduce(
-    (sum: number, bid: CalculatedBid) => sum + (bid.totals.labourCost ?? 0),
-    0
-  );
+const labour = bids.reduce(
+  (sum, bid) => sum + (bid.totals.labourCost ?? 0),
+  0
+);
 
-  const foreignSpend = bids.reduce(
-    (sum: number, bid: CalculatedBid) => sum + (bid.totals.foreignSpend ?? 0),
-    0
-  );
+const foreignSpend = bids.reduce(
+  (sum, bid) => sum + (bid.totals.foreignSpend ?? 0),
+  0
+);
 
-  const totalAward = bids.reduce(
-    (sum: number, bid: CalculatedBid) => sum + (bid.totals.grandTotal ?? 0),
-    0
-  );
-
+const totalAward = bids.reduce(
+  (sum, bid) => sum + (bid.totals.grandTotal ?? 0),
+  0
+);
   return (
     <PageLayout>
       <DetailHeader
-        title={project.name}
-        subtitle={project.code}
+        title={project.project_name}
+        subtitle={project.project_code}
         breadcrumbs={[
           {
             label: "Projects",
             href: "/projects",
           },
           {
-            label: project.name,
+            label: project.project_name,
           },
         ]}
       />

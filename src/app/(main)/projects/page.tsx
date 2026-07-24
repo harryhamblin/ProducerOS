@@ -4,7 +4,7 @@ import { CreateProjectButton } from "@/components/projects/CreateProjectButton";
 import { getForeignSpendPercentage } from "@/lib/project-calculations";
 import { getProjects } from "@/lib/projects/getProjects";
 import { createProject } from "@/lib/projects/getProjects";
-import { createNewProject } from "@/actions/projects";
+import { createNewProject } from "@/actions/projects/projects";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { EditableCell } from "@/components/editable/EditableCell";

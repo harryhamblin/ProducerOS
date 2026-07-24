@@ -19,7 +19,7 @@ export default async function ProjectSettingsPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">
-        {project.name} Settings
+        {project.project_name} Settings
       </h1>
     </div>
   );

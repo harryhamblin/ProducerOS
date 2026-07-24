@@ -321,37 +321,37 @@ export type Database = {
       }
       projects: {
         Row: {
-          code: string
           created_at: string
           created_by: string | null
           current_award: number | null
           foreign_spend: number | null
           id: string
-          name: string
+          project_code: string
+          project_name: string
           shot_count: number | null
           status_id: number
           updated_at: string
         }
         Insert: {
-          code: string
           created_at?: string
           created_by?: string | null
           current_award?: number | null
           foreign_spend?: number | null
           id?: string
-          name: string
+          project_code: string
+          project_name: string
           shot_count?: number | null
           status_id: number
           updated_at?: string
         }
         Update: {
-          code?: string
           created_at?: string
           created_by?: string | null
           current_award?: number | null
           foreign_spend?: number | null
           id?: string
-          name?: string
+          project_code?: string
+          project_name?: string
           shot_count?: number | null
           status_id?: number
           updated_at?: string
@@ -386,29 +386,29 @@ export type Database = {
       }
       shots: {
         Row: {
-          code: string
           created_at: string
           description: string | null
           id: string
           project_id: string
+          shot_code: string
           thumbnail: string | null
           updated_at: string
         }
         Insert: {
-          code: string
           created_at?: string
           description?: string | null
           id?: string
           project_id: string
+          shot_code: string
           thumbnail?: string | null
           updated_at?: string
         }
         Update: {
-          code?: string
           created_at?: string
           description?: string | null
           id?: string
           project_id?: string
+          shot_code?: string
           thumbnail?: string | null
           updated_at?: string
         }
