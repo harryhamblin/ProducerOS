@@ -18,11 +18,27 @@ import { ProjectBidsTable } from "@/components/bids/BidsTable";
 import { Section } from "@/components/layout/Section";
 import { CalculatedBid } from "@/types/bid";
 
+import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+
 type Props = {
-  params: Promise<{
-    projectID: string;
-  }>;
+  params: Promise<{ projectID: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { projectID } = await params;
+  const supabase = await createClient();
+
+  const { data: project } = await supabase
+    .from("projects")
+    .select("code")
+    .eq("id", projectID)
+    .single();
+
+  return {
+    title: project?.code ?? "Project",
+  };
+}
 
 export default async function ProjectPage({ params }: Props) {
   const { projectID } = await params;
@@ -32,6 +48,7 @@ export default async function ProjectPage({ params }: Props) {
     getCalculatedBids(projectID),
   ]);
 
+  
   if (!project) {
     notFound();
   }

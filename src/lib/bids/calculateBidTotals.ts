@@ -3,38 +3,23 @@ import type {
   BidItem,
   BidTask,
   ProjectTask,
+  CalculatedBid,
 } from "@/types/bid";
 
 export function calculateBidTotals(
   bidItems: BidItem[],
   bidTasks: Map<string, Map<number, BidTask>>,
   projectTasks: ProjectTask[]
-) {
+): CalculatedBid {
   const flattenedTasks: BidTask[] = [];
 
   for (const tasks of bidTasks.values()) {
-    for (const task of tasks.values()) {
-      flattenedTasks.push(task);
-    }
+    flattenedTasks.push(...tasks.values());
   }
 
-  const result = calculateBid({
+  return calculateBid({
     items: bidItems,
     bidTasks: flattenedTasks,
     projectTasks,
   });
-
-  return {
-    items: new Map(
-      result.items.map((item) => [
-        item.id,
-        {
-          labourCost: item.labourCost,
-          foreignSpend: item.foreign_spend ?? 0,
-          total: item.grandTotal,
-        },
-      ])
-    ),
-    totals: result.totals,
-  };
 }

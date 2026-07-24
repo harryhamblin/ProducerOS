@@ -18,6 +18,12 @@ import { ProjectsTable } from "@/components/projects/ProjectsTable";
 import { KpiGrid } from "@/components/layout/KpiGrid";
 import { KpiCard } from "@/components/layout/KpiCard";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Projects",
+};
+
 export default async function ProjectsPage() {
   const projects = await getProjects();
 

@@ -79,6 +79,7 @@ export type Database = {
           quantity: number
           shot_id: string | null
           sort_order: number
+          thumbnail_url: string | null
           updated_at: string
           vendor_notes: string | null
         }
@@ -96,6 +97,7 @@ export type Database = {
           quantity?: number
           shot_id?: string | null
           sort_order?: number
+          thumbnail_url?: string | null
           updated_at?: string
           vendor_notes?: string | null
         }
@@ -113,6 +115,7 @@ export type Database = {
           quantity?: number
           shot_id?: string | null
           sort_order?: number
+          thumbnail_url?: string | null
           updated_at?: string
           vendor_notes?: string | null
         }

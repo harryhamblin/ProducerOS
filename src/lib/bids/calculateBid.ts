@@ -2,29 +2,26 @@ import type {
   BidItem,
   BidTask,
   ProjectTask,
-  CalculatedBid,
   CalculatedBidItem,
 } from "@/types/bid";
 
 type Props = {
-    items: BidItem[];
-    bidTasks: BidTask[];
-    projectTasks: ProjectTask[];
+  items: BidItem[];
+  bidTasks: BidTask[];
+  projectTasks: ProjectTask[];
 };
 
 export function calculateBid({
   items,
   bidTasks,
   projectTasks,
-}: Props): CalculatedBid {
-  // task_id -> daily_rate
+}: Props) {
   const rateLookup = new Map<number, number>();
 
   for (const task of projectTasks) {
     rateLookup.set(task.task_id, task.daily_rate);
   }
 
-  // bid_item_id -> bid tasks
   const tasksByItem = new Map<string, BidTask[]>();
 
   for (const task of bidTasks) {
@@ -38,6 +35,7 @@ export function calculateBid({
   }
 
   const calculatedItems: CalculatedBidItem[] = [];
+
   let labourCost = 0;
   let foreignSpend = 0;
   let grandTotal = 0;
@@ -48,36 +46,36 @@ export function calculateBid({
     const itemTasks = tasksByItem.get(item.id) ?? [];
 
     for (const bidTask of itemTasks) {
-        const dailyRate = rateLookup.get(bidTask.task_id) ?? 0;
+      const dailyRate = rateLookup.get(bidTask.task_id) ?? 0;
 
-        labourCostForItem +=
-            (bidTask.duration_days ?? 0) * dailyRate;
+      labourCostForItem +=
+        Number(bidTask.duration_days ?? 0) * dailyRate;
     }
 
-    const foreignSpendForItem = item.foreign_spend ?? 0;
-    const quantity = item.quantity ?? 1;
+    const foreignSpendForItem = Number(item.foreign_spend ?? 0);
+    const quantity = Number(item.quantity ?? 1);
 
     const grandTotalForItem =
-        (labourCostForItem + foreignSpendForItem) * quantity;
+      (labourCostForItem + foreignSpendForItem) * quantity;
 
     labourCost += labourCostForItem;
     foreignSpend += foreignSpendForItem;
     grandTotal += grandTotalForItem;
 
     calculatedItems.push({
-        ...item,
-        labourCost: labourCostForItem,
-        grandTotal: grandTotalForItem,
+      ...item,
+      labourCost: labourCostForItem,
+      grandTotal: grandTotalForItem,
     });
-}
+  }
 
   return {
     items: calculatedItems,
     totals: {
-        itemCount: calculatedItems.length,
-        labourCost,
-        foreignSpend,
-        grandTotal,
+      itemCount: calculatedItems.length,
+      labourCost,
+      foreignSpend,
+      grandTotal,
     },
-};
+  };
 }

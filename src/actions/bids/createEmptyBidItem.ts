@@ -6,9 +6,15 @@ import { createClient } from "@/lib/supabase/server";
 export async function createBidItem(
   projectID: string,
   bidID: string,
+  itemType: "shot" | "asset" | "custom"
 ) {
   const supabase = await createClient();
-
+  await supabase.from("bid_items").insert({
+    bid_id: bidID,
+    item_type: itemType,
+    quantity: 1,
+    cost_type: "Per Item",
+  });
   const { data: bidItems, error: fetchError } = await supabase
     .from("bid_items")
     .select("name")
