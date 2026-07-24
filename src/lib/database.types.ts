@@ -14,7 +14,7 @@ export type Database = {
   }
   public: {
     Tables: {
-      bid_shots: {
+      bid_items: {
         Row: {
           bid_id: string
           cost_type: string | null
@@ -23,8 +23,8 @@ export type Database = {
           frames: number | null
           id: string
           quantity: number | null
-          shot_code: string
-          thumbnail_url: string | null
+          item_code: string
+          thumbnail: string | null
           updated_at: string | null
           vendor_notes: string | null
           vfx_work_requirements: string | null
@@ -37,8 +37,8 @@ export type Database = {
           frames?: number | null
           id?: string
           quantity?: number | null
-          shot_code: string
-          thumbnail_url?: string | null
+          item_code: string
+          thumbnail?: string | null
           updated_at?: string | null
           vendor_notes?: string | null
           vfx_work_requirements?: string | null
@@ -51,15 +51,15 @@ export type Database = {
           frames?: number | null
           id?: string
           quantity?: number | null
-          shot_code?: string
-          thumbnail_url?: string | null
+          item_code?: string
+          thumbnail?: string | null
           updated_at?: string | null
           vendor_notes?: string | null
           vfx_work_requirements?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "bid_shots_bid_id_fkey"
+            foreignKeyName: "bid_item_bid_id_fkey"
             columns: ["bid_id"]
             isOneToOne: false
             referencedRelation: "bids"
@@ -69,7 +69,7 @@ export type Database = {
       }
       bid_tasks: {
         Row: {
-          bid_shot_id: string
+          bid_item_id: string
           created_at: string
           duration_days: number | null
           id: string
@@ -77,7 +77,7 @@ export type Database = {
           task_id: number
         }
         Insert: {
-          bid_shot_id: string
+          bid_item_id: string
           created_at?: string
           duration_days?: number | null
           id?: string
@@ -85,7 +85,7 @@ export type Database = {
           task_id: number
         }
         Update: {
-          bid_shot_id?: string
+          bid_item_id?: string
           created_at?: string
           duration_days?: number | null
           id?: string
@@ -94,10 +94,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "bid_tasks_bid_shot_id_fkey"
-            columns: ["bid_shot_id"]
+            foreignKeyName: "bid_tasks_bid_item_id_fkey"
+            columns: ["bid_item_id"]
             isOneToOne: false
-            referencedRelation: "bid_shots"
+            referencedRelation: "bid_item"
             referencedColumns: ["id"]
           },
           {
@@ -252,7 +252,7 @@ export type Database = {
           foreign_spend: number | null
           id: string
           name: string
-          shot_count: number | null
+          item_count: number | null
           status_id: number
           updated_at: string
         }
@@ -264,7 +264,7 @@ export type Database = {
           foreign_spend?: number | null
           id?: string
           name: string
-          shot_count?: number | null
+          item_count?: number | null
           status_id: number
           updated_at?: string
         }
@@ -276,7 +276,7 @@ export type Database = {
           foreign_spend?: number | null
           id?: string
           name?: string
-          shot_count?: number | null
+          item_count?: number | null
           status_id?: number
           updated_at?: string
         }
@@ -290,7 +290,7 @@ export type Database = {
           },
         ]
       }
-      shot_statuses: {
+      item_statuses: {
         Row: {
           colour: string
           id: number
@@ -308,7 +308,7 @@ export type Database = {
         }
         Relationships: []
       }
-      shots: {
+      items: {
         Row: {
           code: string
           created_at: string
@@ -338,7 +338,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "shots_project_id_fkey"
+            foreignKeyName: "items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
@@ -413,7 +413,7 @@ export type Database = {
     Functions: {
       can_edit_project: { Args: { project_uuid: string }; Returns: boolean }
       can_view_bid: { Args: { bid_uuid: string }; Returns: boolean }
-      can_view_bid_shot: { Args: { bid_shot_uuid: string }; Returns: boolean }
+      can_view_bid_item: { Args: { bid_item_uuid: string }; Returns: boolean }
       can_view_project: { Args: { project_uuid: string }; Returns: boolean }
     }
     Enums: {

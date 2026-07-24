@@ -1,18 +1,18 @@
 import type {
-  BidShot,
+  BidItem,
   BidTask,
   ProjectTask,
   CalculatedBid,
   BidTaskLookup,
 } from "@/types";
 
-interface ShotsTableProps {
+interface ItemsTableProps {
     projectId: string;
     bidId: string;
 
-    shots: BidShot[];
+    items: BidItem[];
 
-    tasksByShot: BidTaskLookup;
+    tasksByItem: BidTaskLookup;
 
     tasks: ProjectTask[];
 

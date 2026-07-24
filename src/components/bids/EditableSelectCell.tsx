@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateBidShot } from "@/actions/bids/actions";
+import { updateBidItem } from "@/actions/bids/actions";
 
 type Props = {
   projectID: string;
   bidID: string;
-  shotID: string;
+  itemID: string;
   value: string | null;
   options: readonly string[];
 };
@@ -14,7 +14,7 @@ type Props = {
 export default function EditableSelectCell({
   projectID,
   bidID,
-  shotID,
+  itemID,
   value,
   options,
 }: Props) {
@@ -25,10 +25,10 @@ export default function EditableSelectCell({
     setCurrentValue(newValue);
 
     startTransition(async () => {
-      await updateBidShot(
+      await updateBidItem(
         projectID,
         bidID,
-        shotID,
+        itemID,
         "cost_type",
         newValue
       );

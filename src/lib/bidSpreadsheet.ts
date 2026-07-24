@@ -6,9 +6,9 @@ export type SpreadsheetTaskColumn = {
   dailyRate: number;
 };
 
-export type SpreadsheetShot = {
+export type SpreadsheetItem = {
   id: string;
-  shotCode: string;
+  itemCode: string;
   frames: number;
   thumbnailUrl: string | null;
   costType: string | null;
@@ -19,13 +19,13 @@ export type SpreadsheetShot = {
 
   tasks: Record<number, number>;
 
-  shotCost: number;
+  itemCost: number;
   total: number;
 };
 
 export type BidSpreadsheet = {
   taskColumns: SpreadsheetTaskColumn[];
-  shots: SpreadsheetShot[];
+  items: SpreadsheetItem[];
 };
 
 export async function getBidSpreadsheet(
@@ -59,15 +59,15 @@ export async function getBidSpreadsheet(
   }));
 
   //
-  // Load bid shots
+  // Load bid items
   //
-  const { data: shotRows, error: shotError } = await supabase
-    .from("bid_shots")
+  const { data: itemRows, error: itemError } = await supabase
+    .from("bid_items")
     .select("*")
     .eq("bid_id", bidID)
-    .order("shot_code");
+    .order("item_code");
 
-  if (shotError) throw shotError;
+  if (itemError) throw itemError;
 
   //
   // Load bid task durations
@@ -75,7 +75,7 @@ export async function getBidSpreadsheet(
   const { data: taskRows, error: taskError } = await supabase
     .from("bid_tasks")
     .select(`
-      bid_shot_id,
+      bid_item_id,
       task_id,
       duration_days
     `);
@@ -88,48 +88,48 @@ export async function getBidSpreadsheet(
   const durationLookup = new Map<string, Record<number, number>>();
 
   for (const row of taskRows ?? []) {
-    if (!durationLookup.has(row.bid_shot_id)) {
-      durationLookup.set(row.bid_shot_id, {});
+    if (!durationLookup.has(row.bid_item_id)) {
+      durationLookup.set(row.bid_item_id, {});
     }
 
-    durationLookup.get(row.bid_shot_id)![Number(row.task_id)] =
+    durationLookup.get(row.bid_item_id)![Number(row.task_id)] =
       Number(row.duration_days);
   }
 
   //
   // Build spreadsheet rows
   //
-  const shots: SpreadsheetShot[] = (shotRows ?? []).map((shot: any) => {
-    const tasks = durationLookup.get(shot.id) ?? {};
+  const items: SpreadsheetItem[] = (itemRows ?? []).map((item: any) => {
+    const tasks = durationLookup.get(item.id) ?? {};
 
-    let shotCost = Number(shot.foreign_spend ?? 0);
+    let itemCost = Number(item.foreign_spend ?? 0);
 
     for (const column of taskColumns) {
       const days = tasks[column.id] ?? 0;
-      shotCost += days * column.dailyRate;
+      itemCost += days * column.dailyRate;
     }
 
     return {
-      id: shot.id,
-      shotCode: shot.shot_code,
-      frames: shot.frames,
-      thumbnailUrl: shot.thumbnail_url,
-      costType: shot.cost_type,
-      vfxWorkRequirements: shot.vfx_work_requirements,
-      vendorNotes: shot.vendor_notes,
-      foreignSpend: Number(shot.foreign_spend ?? 0),
-      quantity: Number(shot.quantity ?? 1),
+      id: item.id,
+      itemCode: item.item_code,
+      frames: item.frames,
+      thumbnailUrl: item.thumbnail,
+      costType: item.cost_type,
+      vfxWorkRequirements: item.vfx_work_requirements,
+      vendorNotes: item.vendor_notes,
+      foreignSpend: Number(item.foreign_spend ?? 0),
+      quantity: Number(item.quantity ?? 1),
 
       tasks,
 
-      shotCost,
+      itemCost,
 
-      total: shotCost * Number(shot.quantity ?? 1),
+      total: itemCost * Number(item.quantity ?? 1),
     };
   });
 
   return {
     taskColumns,
-    shots,
+    items,
   };
 }

@@ -1,11 +1,11 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 
 
-export async function addShotsToBid(
+export async function addItemsToBid(
   bidId: string,
-  shotIds: string[]
+  itemIds: string[]
 ): Promise<void> {
   const supabase = await createClient();
 
@@ -20,26 +20,26 @@ export async function addShotsToBid(
     throw tasksError;
   }
 
-  // Add shots to the bid
-  const { data: bidShots, error: bidShotsError } = await supabase
-    .from("bid_shots")
+  // Add items to the bid
+  const { data: BidItems, error: BidItemsError } = await supabase
+    .from("bid_items")
     .insert(
-      shotIds.map((shotId) => ({
+      itemIds.map((itemId) => ({
         bid_id: bidId,
-        shot_id: shotId,
+        item_id: itemId,
       }))
     )
     .select();
 
-  if (bidShotsError) {
-    console.error("Error creating bid shots:", bidShotsError);
-    throw bidShotsError;
+  if (BidItemsError) {
+    console.error("Error creating bid items:", BidItemsError);
+    throw BidItemsError;
   }
 
-  // Create one bid_task per task for every shot
-  const bidTasks = bidShots.flatMap((bidShot) =>
+  // Create one bid_task per task for every item
+  const bidTasks = BidItems.flatMap((BidItem) =>
     tasks.map((task) => ({
-      bid_shot_id: bidShot.id,
+      bid_item_id: BidItem.id,
       task_id: task.id,
       duration_days: 0,
       notes: null,

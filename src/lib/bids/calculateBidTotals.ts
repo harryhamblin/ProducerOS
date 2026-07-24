@@ -1,12 +1,12 @@
 import { calculateBid } from "@/lib/bids/calculateBid";
 import type {
-  BidShot,
+  BidItem,
   BidTask,
   ProjectTask,
 } from "@/types/bid";
 
 export function calculateBidTotals(
-  bidShots: BidShot[],
+  bidItems: BidItem[],
   bidTasks: Map<string, Map<number, BidTask>>,
   projectTasks: ProjectTask[]
 ) {
@@ -19,19 +19,19 @@ export function calculateBidTotals(
   }
 
   const result = calculateBid({
-    shots: bidShots,
+    items: bidItems,
     bidTasks: flattenedTasks,
     projectTasks,
   });
 
   return {
-    shots: new Map(
-      result.shots.map((shot) => [
-        shot.id,
+    items: new Map(
+      result.items.map((item) => [
+        item.id,
         {
-          labourCost: shot.labourCost,
-          foreignSpend: shot.foreign_spend ?? 0,
-          total: shot.grandTotal,
+          labourCost: item.labourCost,
+          foreignSpend: item.foreign_spend ?? 0,
+          total: item.grandTotal,
         },
       ])
     ),

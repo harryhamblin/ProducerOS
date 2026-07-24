@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
 
-import { createBidShot } from "@/actions/bids/index";
+import { createBidItem } from "@/actions/bids/index";
 import { EditableCell } from "@/components/editable/EditableCell";
 import EditableTaskCell from "@/components/editable/EditableTaskCell";
 import { Button } from "@/components/ui/button";
 import { getBid } from "@/lib/bids";
-import { getBidShots, getBidTasks } from "@/lib/bids/index";
+import { getBidItems, getBidTasks } from "@/lib/bids/index";
 import { getProject } from "@/lib/projects";
 import { getProjectTasks } from "@/lib/projects/getProjectTasks";
 import { cost_type } from "../constants";
@@ -25,18 +25,20 @@ type Props = {
   }>;
 };
 
-const shotColumns = [
-  { key: "shot_code", label: "Shot Code" },
+const itemColumns = [
+  { key: "name", label: "Name" },
   { key: "thumbnail", label: "Thumbnail" },
   { key: "frames", label: "Frames" },
   { key: "cost_type", label: "Cost Type" },
-  { key: "vfx_work_requirements", label: "VFX Work Requirements" },
+  { key: "description", label: "Description" },
   { key: "vendor_notes", label: "Vendor Notes" },
   { key: "foreign_spend", label: "Foreign Spend" },
 ];
 
+
+
 const calculatedColumns = [
-  { key: "shot_cost", label: "Shot Cost" },
+  { key: "item_cost", label: "item Cost" },
   { key: "quantity", label: "Quantity" },
   { key: "total", label: "Total" },
 ];
@@ -53,18 +55,16 @@ export default async function BidPage({ params }: Props) {
   const project = await getProject(projectID);
   
   const bid = await getBid(bidID);
-
-if (!project || !bid) {
-  throw new Error("Project or bid not found");
-}
-
+  const bidItems = await getBidItems(bidID);
+  const bidTasks = await getBidTasks(bidID);
+  if (!project || !bid) {
+    throw new Error("Project or bid not found");
+  }
 
 const projectTasks = await getProjectTasks(projectID);
-const bidShots = await getBidShots(bidID);
-const bidTasks = await getBidTasks(bidID);
 
 const calculatedBid = calculateBidTotals(
-  bidShots,
+  bidItems,
   bidTasks,
   projectTasks
 );
@@ -96,8 +96,8 @@ const calculatedBid = calculateBidTotals(
  
        <KpiGrid>
          <KpiCard
-           label="Shot Count"
-           value={calculatedBid.totals.shotCount.toLocaleString()}
+           label="Items"
+           value={calculatedBid.totals.itemCount.toLocaleString()}
          />
  
          <KpiCard
@@ -129,7 +129,7 @@ const calculatedBid = calculateBidTotals(
         <table className="min-w-full text-sm">
           <thead>
             <tr>
-              {shotColumns.map((column) => (
+              {itemColumns.map((column) => (
                 <th
                   key={column.key}
                   className="border-b border-slate-700 bg-slate-900 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide whitespace-nowrap"
@@ -159,69 +159,72 @@ const calculatedBid = calculateBidTotals(
           </thead>
 
           <tbody>
-            {bidShots.length === 0 ? (
+            {bidItems.length === 0 ? (
               <tr>
                 <td
                   colSpan={
-                    shotColumns.length +
+                    itemColumns.length +
                     projectTasks.length +
                     calculatedColumns.length
                   }
                   className="py-12 text-center text-slate-500"
                 >
-                  No shots added to this bid.
+                  No items added to this bid.
                 </td>
               </tr>
             ) : (
-              bidShots.map((shot) => {
-                const taskLookup = bidTasks.get(shot.id) ?? new Map();
-                const calculatedShot = calculatedBid.shots.get(shot.id)!;
+              bidItems.map((item) => {
+    const taskLookup = bidTasks.get(item.id) ?? new Map();
+    const thumbnail =
+    item.item_type === "shot"
+        ? item.shot?.thumbnail
+        : item.item_type === "asset"
+        ? item.asset?.thumbnail
+        : null;
+    const displayName =
+        item.item_type === "shot"
+            ? item.shot?.shot_code
+            : item.item_type === "asset"
+            ? item.asset?.name
+            : item.name;
+    const frames =
+    item.item_type === "shot"
+        ? item.shot?.frames
+        : null;
+const calculatedItem = calculatedBid.items.get(item.id)!;
 
-                return (
+    return (
                   <tr
-                    key={shot.id}
+                    key={item.id}
                     className="border-b border-slate-800 hover:bg-slate-900/40"
                   >
-                    <td className="px-3 py-2">
-                      <EditableCell
-                      table="bid_shots"
-                      rowId={shot.id}
-                      field="shot_code"
-                      value={shot.shot_code}
-                      type="text"
-                      revalidatePath={`/projects/${projectID}/bids/${bidID}`}
-                    />
+                    <td className="px-3 py-2 font-medium">
+                        {displayName}
                     </td>
 
                     <td className="px-3 py-2">
-                      {shot.thumbnail_url ? (
-                        <img
-                          src={shot.thumbnail_url}
-                          alt=""
-                          className="h-10 w-16 rounded object-cover"
-                        />
+                      {thumbnail ? (
+                          <img
+                              src={thumbnail}
+                              alt=""
+                              className="h-10 w-16 rounded object-cover"
+                          />
                       ) : (
-                        "-"
+                          "-"
                       )}
+                  </td>
+
+
+                    <td className="px-3 py-2 text-right">
+                        {frames ?? "-"}
                     </td>
 
                     <td className="px-3 py-2">
                       <EditableCell
-  table="bid_shots"
-  rowId={shot.id}
-  field="frames"
-  value={shot.frames}
-  type="number"
-  revalidatePath={`/projects/${projectID}/bids/${bidID}`}
-/>
-                    </td>
-
-                    <td className="px-3 py-2">
-                      <EditableCell
-                          table="bid_shots"
-                          rowId={shot.id}
+                          table="bid_items"
+                          rowId={item.id}
                           field="cost_type"
-                          value={shot.cost_type}
+                          value={item.cost_type}
                           type="select"
                           options={cost_type}
                           revalidatePath={`/projects/${projectID}/bids/${bidID}`}
@@ -230,21 +233,21 @@ const calculatedBid = calculateBidTotals(
 
                     <td className="px-3 py-2">
                       <EditableCell
-                        table="bid_shots"
-                        rowId={shot.id}
-                        field="vfx_work_description"
-                        value={shot.vfx_work_description}
+                        table="bid_items"
+                        rowId={item.id}
+                        field="description"
+                        value={item.description}
                         type="text"
                         revalidatePath={`/projects/${projectID}/bids/${bidID}`}
-                      />
+                    />
                     </td>
 
                     <td className="px-3 py-2">
                       <EditableCell
-                        table="bid_shots"
-                        rowId={shot.id}
+                        table="bid_items"
+                        rowId={item.id}
                         field="vendor_notes"
-                        value={shot.vendor_notes}
+                        value={item.vendor_notes}
                         type="text"
                         revalidatePath={`/projects/${projectID}/bids/${bidID}`}
                       />
@@ -252,10 +255,10 @@ const calculatedBid = calculateBidTotals(
 
                     <td className="px-3 py-2">
                       <EditableCell
-                        table="bid_shots"
-                        rowId={shot.id}
+                        table="bid_items"
+                        rowId={item.id}
                         field="foreign_spend"
-                        value={shot.foreign_spend}
+                        value={item.foreign_spend}
                         type="currency"
                         revalidatePath={`/projects/${projectID}/bids/${bidID}`}
                       />
@@ -284,7 +287,7 @@ const calculatedBid = calculateBidTotals(
 
                     <td className="px-3 py-2 text-right">
                       £
-                      {calculatedShot.total.toLocaleString(undefined, {
+                      {calculatedItem.labourCost.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -292,10 +295,10 @@ const calculatedBid = calculateBidTotals(
 
                     <td className="px-3 py-2">
                       <EditableCell
-                        table="bid_shots"
-                        rowId={shot.id}
+                        table="bid_items"
+                        rowId={item.id}
                         field="quantity"
-                        value={shot.quantity}
+                        value={item.quantity}
                         type="number"
                         revalidatePath={`/projects/${projectID}/bids/${bidID}`}
                       />
@@ -303,7 +306,7 @@ const calculatedBid = calculateBidTotals(
 
                     <td className="px-3 py-2 text-right font-medium">
                       £
-                      {calculatedShot.total.toLocaleString(undefined, {
+                      {calculatedItem.total.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -317,27 +320,45 @@ const calculatedBid = calculateBidTotals(
   <tr>
     <td
       colSpan={
-        shotColumns.length +
+        itemColumns.length +
         projectTasks.length +
         calculatedColumns.length
       }
       className="border-t border-slate-700 p-4"
     >
-      <form
-        action={async () => {
-          "use server";
-          await createBidShot(projectID, bidID);
-        }}
-      >
-        <Button
-  type="submit"
-  variant="outline"
-  className="w-full justify-center border-dashed"
->
-  <Plus className="mr-2 h-4 w-4" />
-  Add Shot
-</Button>
-      </form>
+      <div className="flex gap-4">
+  <form
+    action={async () => {
+      "use server";
+      await createBidItem(projectID, bidID);
+    }}
+    className="w-1/5"
+  >
+    <Button
+      type="submit"
+      className="w-full justify-center rounded-xl border-4 border-dashed p-5"
+    >
+      <Plus className="mr-2 h-4 w-4" />
+      Add Shot
+    </Button>
+  </form>
+
+  <form
+    action={async () => {
+      "use server";
+      await createBidItem(projectID, bidID);
+    }}
+    className="w-1/5"
+  >
+    <Button
+      type="submit"
+      className="w-full justify-center rounded-xl border-4 border-dashed p-5"
+    >
+      <Plus className="mr-2 h-4 w-4" />
+      Add Asset
+    </Button>
+  </form>
+</div>
     </td>
   </tr>
 </tfoot>

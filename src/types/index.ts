@@ -2,7 +2,7 @@
 
 export * from "./bid";
 export * from "./project";
-export * from "./shot";
+export * from "./item";
 export * from "./task";
 export * from "./crew";
 export * from "./financial";

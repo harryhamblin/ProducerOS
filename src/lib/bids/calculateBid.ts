@@ -1,19 +1,19 @@
 import type {
-  BidShot,
+  BidItem,
   BidTask,
   ProjectTask,
   CalculatedBid,
-  CalculatedShot,
+  CalculatedBidItem,
 } from "@/types/bid";
 
 type Props = {
-  shots: BidShot[];
-  bidTasks: BidTask[];
-  projectTasks: ProjectTask[];
+    items: BidItem[];
+    bidTasks: BidTask[];
+    projectTasks: ProjectTask[];
 };
 
 export function calculateBid({
-  shots,
+  items,
   bidTasks,
   projectTasks,
 }: Props): CalculatedBid {
@@ -24,62 +24,60 @@ export function calculateBid({
     rateLookup.set(task.task_id, task.daily_rate);
   }
 
-  // bid_shot_id -> bid tasks
-  const tasksByShot = new Map<string, BidTask[]>();
+  // bid_item_id -> bid tasks
+  const tasksByItem = new Map<string, BidTask[]>();
 
   for (const task of bidTasks) {
-    const existing = tasksByShot.get(task.bid_shot_id);
+    const existing = tasksByItem.get(task.bid_item_id);
 
     if (existing) {
       existing.push(task);
     } else {
-      tasksByShot.set(task.bid_shot_id, [task]);
+      tasksByItem.set(task.bid_item_id, [task]);
     }
   }
 
-  const calculatedShots: CalculatedShot[] = [];
-
+  const calculatedItems: CalculatedBidItem[] = [];
   let labourCost = 0;
   let foreignSpend = 0;
   let grandTotal = 0;
 
-  for (const shot of shots) {
-    let shotLabour = 0;
+  for (const item of items) {
+    let labourCostForItem = 0;
 
-    const shotTasks = tasksByShot.get(shot.id) ?? [];
+    const itemTasks = tasksByItem.get(item.id) ?? [];
 
-    for (const bidTask of shotTasks) {
-      const dailyRate =
-        rateLookup.get(bidTask.task_id) ?? 0;
+    for (const bidTask of itemTasks) {
+        const dailyRate = rateLookup.get(bidTask.task_id) ?? 0;
 
-      shotLabour +=
-        (bidTask.duration_days ?? 0) * dailyRate;
+        labourCostForItem +=
+            (bidTask.duration_days ?? 0) * dailyRate;
     }
 
-    const shotForeign = shot.foreign_spend ?? 0;
-    const quantity = shot.quantity ?? 1;
+    const foreignSpendForItem = item.foreign_spend ?? 0;
+    const quantity = item.quantity ?? 1;
 
-    const shotGrand =
-      (shotLabour + shotForeign) * quantity;
+    const grandTotalForItem =
+        (labourCostForItem + foreignSpendForItem) * quantity;
 
-    labourCost += shotLabour;
-    foreignSpend += shotForeign;
-    grandTotal += shotGrand;
+    labourCost += labourCostForItem;
+    foreignSpend += foreignSpendForItem;
+    grandTotal += grandTotalForItem;
 
-    calculatedShots.push({
-      ...shot,
-      labourCost: shotLabour,
-      grandTotal: shotGrand,
+    calculatedItems.push({
+        ...item,
+        labourCost: labourCostForItem,
+        grandTotal: grandTotalForItem,
     });
-  }
+}
 
   return {
-    shots: calculatedShots,
+    items: calculatedItems,
     totals: {
-      shotCount: calculatedShots.length,
-      labourCost,
-      foreignSpend,
-      grandTotal,
+        itemCount: calculatedItems.length,
+        labourCost,
+        foreignSpend,
+        grandTotal,
     },
-  };
+};
 }

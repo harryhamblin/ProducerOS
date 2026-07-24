@@ -35,4 +35,4 @@
 - Project status lookup table
 - Projects overview page
 - Financial metrics
-- Shot count
+- Item count

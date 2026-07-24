@@ -42,8 +42,8 @@ export default async function ProjectPage({ params }: Props) {
     maximumFractionDigits: 0,
   });
 
-const shotCount = bids.reduce(
-  (sum: number, bid: CalculatedBid) => sum + (bid.totals.shotCount ?? 0),
+const itemCount = bids.reduce(
+  (sum: number, bid: CalculatedBid) => sum + (bid.totals.itemCount ?? 0),
   0
 );
 
@@ -80,8 +80,8 @@ const shotCount = bids.reduce(
 
       <KpiGrid>
         <KpiCard
-          label="Shot Count"
-          value={shotCount}
+          label="Item Count"
+          value={itemCount}
         />
 
         <KpiCard

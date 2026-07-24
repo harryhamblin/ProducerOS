@@ -10,8 +10,17 @@ export type Bid = {
   notes: string | null;
 };
 
-export type BidShot =
-  Database["public"]["Tables"]["bid_shots"]["Row"];
+export type Shot =
+    Database["public"]["Tables"]["shots"]["Row"];
+
+export type Asset =
+    Database["public"]["Tables"]["assets"]["Row"];
+
+export type BidItem =
+  Database["public"]["Tables"]["bid_items"]["Row"] & {
+    shot: Database["public"]["Tables"]["shots"]["Row"] | null;
+    asset: Database["public"]["Tables"]["assets"]["Row"] | null;
+  };
 
 export type BidTask =
   Database["public"]["Tables"]["bid_tasks"]["Row"];
@@ -35,16 +44,16 @@ export interface ProjectTask {
   daily_rate: number;
 }
 
-export type CalculatedShot = BidShot & {
+export type CalculatedBidItem = BidItem & {
   labourCost: number;
   grandTotal: number;
 };
 
 export interface CalculatedBid {
-  shots: CalculatedShot[];
+  items: CalculatedBidItem[];
 
   totals: {
-    shotCount: number;
+    itemCount: number;
     labourCost: number;
     foreignSpend: number;
     grandTotal: number;

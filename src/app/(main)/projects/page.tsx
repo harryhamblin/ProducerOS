@@ -34,8 +34,8 @@ export default async function ProjectsPage() {
     0
   );
 
-  const totalShots = projects.reduce(
-    (sum, project) => sum + (project.shot_count ?? 0),
+  const totalItems = projects.reduce(
+    (sum, project) => sum + (project.item_count ?? 0),
     0
   );
 
@@ -68,7 +68,7 @@ export default async function ProjectsPage() {
           />
 
           <KpiCard
-            label="Active Shot Count"
+            label="Active Item Count"
             value={"Null"}
           />
 

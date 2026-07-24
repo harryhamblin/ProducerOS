@@ -27,7 +27,12 @@ export async function getProjectTasks(projectID: string) {
     .eq("project_id", projectID)
     .order("task_id");
 
-  if (error) throw error;
+  if (error) {
+  console.error(error);
+  throw new Error(
+    `${error.code}: ${error.message}\n${error.details ?? ""}\n${error.hint ?? ""}`
+  );
+}
 
   const rows = data as unknown as ProjectTaskRow[];
 

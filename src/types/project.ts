@@ -6,7 +6,7 @@ export type Project = {
   status: ProjectStatus;
   current_award: number | null;
   foreign_spend: number | null;
-  shot_count: number | null;
+  item_count: number | null;
   created_at: string;
   updated_at: string;
 };

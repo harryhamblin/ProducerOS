@@ -63,8 +63,8 @@ export const ProjectColumns: ColumnDefinition[] = [
 },
 
 {
-  field: "shot_count",
-  title: "Shots",
+  field: "item_count",
+  title: "Items",
   editable: false,
   align: "right",
 },

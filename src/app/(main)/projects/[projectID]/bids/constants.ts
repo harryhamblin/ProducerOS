@@ -6,7 +6,7 @@ export const cost_type = [
 export type CostType = (typeof cost_type)[number];
 
 export const editableFields = [
-  "shot_code",
+  "item_code",
   "frames",
   "cost_type",
   "vfx_work_requirements",

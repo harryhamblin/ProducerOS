@@ -40,7 +40,7 @@ export function ProjectBidsTable({
           </th>
 
           <th className="px-4 py-3 text-left font-medium text-slate-400">
-            Shots
+            Items
           </th>
 
           <th className="px-4 py-3 text-left font-medium text-slate-400">
@@ -98,7 +98,7 @@ export function ProjectBidsTable({
             </td>
 
             <td className="px-4 py-3">
-              {bid.totals.shotCount}
+              {bid.totals.itemCount}
             </td>
 
             <td className="px-4 py-3">
@@ -124,8 +124,7 @@ export function ProjectBidsTable({
             >
               <Button
                 type="submit"
-                variant="outline"
-                className="w-full justify-center border-0 border-dashed rounded-none"
+                className="w-full justify-center rounded-xl border-5 border-dashed p-5"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Bid

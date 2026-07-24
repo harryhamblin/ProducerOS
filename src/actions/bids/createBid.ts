@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { Bid } from "@/types/bid";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { CreateBidInput } from "@/lib/bids/getBid";
 
 export async function createBid(

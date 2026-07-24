@@ -49,7 +49,7 @@ export function ProjectsTable({
           </th>
 
           <th className="px-6 py-3 text-left font-medium text-slate-400">
-            Shots
+            Items
           </th>
         </tr>
       </thead>
@@ -134,7 +134,7 @@ export function ProjectsTable({
               </td>
 
               <td className="px-4 py-3">
-                {project.shot_count ?? "—"}
+                {project.item_count ?? "—"}
               </td>
             </tr>
           );
@@ -148,8 +148,7 @@ export function ProjectsTable({
             <form action={createNewProject}>
               <Button
                 type="submit"
-                variant="outline"
-                className="w-full justify-center rounded-none border-0 border-dashed"
+                className="w-full justify-center rounded-xl border-5 border-dashed p-5"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Project

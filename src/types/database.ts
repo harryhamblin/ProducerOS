@@ -14,62 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
-      bid_shots: {
+      assets: {
         Row: {
-          bid_id: string
-          cost_type: string | null
-          created_at: string | null
-          foreign_spend: number | null
-          frames: number | null
+          asset_code: string
+          asset_type: string
+          created_at: string
+          description: string | null
           id: string
-          quantity: number | null
-          shot_code: string
+          name: string
+          notes: string | null
+          project_id: string
+          status: string
           thumbnail_url: string | null
-          updated_at: string | null
-          vendor_notes: string | null
-          vfx_work_requirements: string | null
+          updated_at: string
         }
         Insert: {
-          bid_id: string
-          cost_type?: string | null
-          created_at?: string | null
-          foreign_spend?: number | null
-          frames?: number | null
+          asset_code: string
+          asset_type?: string
+          created_at?: string
+          description?: string | null
           id?: string
-          quantity?: number | null
-          shot_code: string
+          name: string
+          notes?: string | null
+          project_id: string
+          status?: string
           thumbnail_url?: string | null
-          updated_at?: string | null
-          vendor_notes?: string | null
-          vfx_work_requirements?: string | null
+          updated_at?: string
         }
         Update: {
-          bid_id?: string
-          cost_type?: string | null
-          created_at?: string | null
-          foreign_spend?: number | null
-          frames?: number | null
+          asset_code?: string
+          asset_type?: string
+          created_at?: string
+          description?: string | null
           id?: string
-          quantity?: number | null
-          shot_code?: string
+          name?: string
+          notes?: string | null
+          project_id?: string
+          status?: string
           thumbnail_url?: string | null
-          updated_at?: string | null
-          vendor_notes?: string | null
-          vfx_work_requirements?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "bid_shots_bid_id_fkey"
+            foreignKeyName: "assets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bid_items: {
+        Row: {
+          asset_id: string | null
+          bid_id: string
+          cost_type: string
+          created_at: string
+          description: string | null
+          foreign_spend: number
+          frames: number | null
+          id: string
+          item_type: Database["public"]["Enums"]["bid_item_type"]
+          name: string | null
+          quantity: number
+          shot_id: string | null
+          sort_order: number
+          updated_at: string
+          vendor_notes: string | null
+        }
+        Insert: {
+          asset_id?: string | null
+          bid_id: string
+          cost_type?: string
+          created_at?: string
+          description?: string | null
+          foreign_spend?: number
+          frames?: number | null
+          id?: string
+          item_type: Database["public"]["Enums"]["bid_item_type"]
+          name?: string | null
+          quantity?: number
+          shot_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          vendor_notes?: string | null
+        }
+        Update: {
+          asset_id?: string | null
+          bid_id?: string
+          cost_type?: string
+          created_at?: string
+          description?: string | null
+          foreign_spend?: number
+          frames?: number | null
+          id?: string
+          item_type?: Database["public"]["Enums"]["bid_item_type"]
+          name?: string | null
+          quantity?: number
+          shot_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          vendor_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_items_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_items_bid_id_fkey"
             columns: ["bid_id"]
             isOneToOne: false
             referencedRelation: "bids"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_items_shot_id_fkey"
+            columns: ["shot_id"]
+            isOneToOne: false
+            referencedRelation: "shots"
             referencedColumns: ["id"]
           },
         ]
       }
       bid_tasks: {
         Row: {
-          bid_shot_id: string
+          bid_item_id: string
           created_at: string
           duration_days: number | null
           id: string
@@ -77,7 +150,7 @@ export type Database = {
           task_id: number
         }
         Insert: {
-          bid_shot_id: string
+          bid_item_id: string
           created_at?: string
           duration_days?: number | null
           id?: string
@@ -85,7 +158,7 @@ export type Database = {
           task_id: number
         }
         Update: {
-          bid_shot_id?: string
+          bid_item_id?: string
           created_at?: string
           duration_days?: number | null
           id?: string
@@ -94,10 +167,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "bid_tasks_bid_shot_id_fkey"
-            columns: ["bid_shot_id"]
+            foreignKeyName: "bid_tasks_bid_item_id_fkey"
+            columns: ["bid_item_id"]
             isOneToOne: false
-            referencedRelation: "bid_shots"
+            referencedRelation: "bid_items"
             referencedColumns: ["id"]
           },
           {
@@ -417,6 +490,7 @@ export type Database = {
       can_view_project: { Args: { project_uuid: string }; Returns: boolean }
     }
     Enums: {
+      bid_item_type: "shot" | "asset" | "custom"
       user_group: "admin" | "user"
     }
     CompositeTypes: {
@@ -545,6 +619,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      bid_item_type: ["shot", "asset", "custom"],
       user_group: ["admin", "user"],
     },
   },

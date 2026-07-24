@@ -37,7 +37,7 @@ export function CreateProjectButton() {
           <Input placeholder="Project Code" />
           <Input type="number" placeholder="Current Award (£)" />
           <Input type="number" placeholder="Foreign Spend (£)" />
-          <Input type="number" placeholder="Shot Count" />
+          <Input type="number" placeholder="Item Count" />
         </div>
 
         <DialogFooter>

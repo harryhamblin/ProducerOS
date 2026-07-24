@@ -45,7 +45,7 @@ type CreateProjectInput = {
   status_id?: number;
   current_award?: number;
   foreign_spend?: number;
-  shot_count?: number;
+  item_count?: number;
 };
 
 export async function createProject(input: CreateProjectInput) {
@@ -59,7 +59,7 @@ export async function createProject(input: CreateProjectInput) {
       status_id: input.status_id ?? 1,
       current_award: input.current_award ?? null,
       foreign_spend: input.foreign_spend ?? null,
-      shot_count: input.shot_count ?? null,
+      item_count: input.item_count ?? null,
     })
     .select()
     .single();
