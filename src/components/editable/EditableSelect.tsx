@@ -39,12 +39,22 @@ export function EditableSelect({
   }
 
   return (
-    <select
-      value={currentValue}
-      disabled={disabled}
-      onChange={(e) => handleChange(e.target.value)}
-      className="w-full rounded bg-transparent px-2 py-1 outline-none"
-    >
+<select
+    value={currentValue}
+    disabled={disabled}
+    onChange={(e) => handleChange(e.target.value)}
+    className={`
+        w-full
+        bg-transparent
+        px-2
+        py-1
+        outline-none
+        transition-colors duration-100
+        hover:bg-slate-800
+        cursor-pointer
+        disabled:opacity-50
+    `}
+>
       {options.map(option => (
         <option
           key={option.value.toString()}

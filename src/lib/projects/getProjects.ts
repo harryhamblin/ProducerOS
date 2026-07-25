@@ -7,20 +7,21 @@ export async function getProjects() {
   const { data, error } = await supabase
     .from("projects")
     .select(`
-            *,
-            status:project_statuses(
-                id,
-                name,
-                colour
-            )
-            `)
+      *,
+      status:project_statuses(
+        id,
+        name,
+        colour
+      )
+    `)
     .order("project_name", { ascending: true });
 
   if (error) {
     console.error("Error fetching projects:", error);
     throw error;
   }
-   return data as Project[];
+
+  return data as Project[];
 }
 
 export async function getProject(id: string) {
@@ -32,10 +33,10 @@ export async function getProject(id: string) {
     .eq("id", id)
     .maybeSingle();
 
-if (error) {
- console.error(JSON.stringify(error, null, 2));
-throw error;
-}
+  if (error) {
+    console.error(JSON.stringify(error, null, 2));
+    throw error;
+  }
 
   return data as Project | null;
 }
@@ -59,7 +60,11 @@ export async function createProject(input: CreateProjectInput) {
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  // ------------------------------------------------------------------
+  // Create Project
+  // ------------------------------------------------------------------
+
+  const { data: project, error } = await supabase
     .from("projects")
     .insert({
       project_name: input.project_name,
@@ -77,11 +82,44 @@ export async function createProject(input: CreateProjectInput) {
     throw new Error(JSON.stringify(error));
   }
 
-  return data as Project;
+  // ------------------------------------------------------------------
+  // Create Project Task Rates
+  // ------------------------------------------------------------------
+
+  const { data: tasks, error: tasksError } = await supabase
+    .from("tasks")
+    .select("id")
+    .eq("active", true)
+    .order("sort_order");
+
+  if (tasksError) {
+    console.error("Failed to load tasks:", tasksError);
+    throw new Error(tasksError.message);
+  }
+
+  const projectTaskRates =
+    tasks?.map((task) => ({
+      project_id: project.id,
+      task_id: task.id,
+      daily_rate: 0,
+    })) ?? [];
+
+  if (projectTaskRates.length) {
+    const { error: ratesError } = await supabase
+      .from("project_task_rates")
+      .insert(projectTaskRates);
+
+    if (ratesError) {
+      console.error(
+        "Failed to create project task rates:",
+        ratesError
+      );
+      throw new Error(ratesError.message);
+    }
+  }
+
+  return project as Project;
 }
-
-
-
 
 type UpdateProjectInput = Partial<CreateProjectInput>;
 

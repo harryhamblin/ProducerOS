@@ -4,7 +4,7 @@ import { EditableInput } from "./EditableInput";
 import { EditableDate } from "./EditableDate";
 import { EditableSelect } from "./EditableSelect";
 
-import { EditableCellProps } from "./types";
+import { EditableCellProps } from "@/types/editable";
 
 export function EditableCell(
   props: EditableCellProps

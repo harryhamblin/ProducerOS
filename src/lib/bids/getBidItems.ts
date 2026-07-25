@@ -12,12 +12,7 @@ const { data } = await supabase
       shot_code,
       description,
       thumbnail_url,
-      status_id,
-      production_statuses(
-        id,
-        name,
-        colour
-      )
+      status_id
     ),
     asset:assets(
       id,
@@ -25,17 +20,12 @@ const { data } = await supabase
       asset_type,
       description,
       thumbnail_url,
-      status_id,
-      production_statuses(
-        id,
-        name,
-        colour
-      )
+      status_id
     )
   `)
   .eq("bid_id", bidID)
   .order("sort_order");
-
+console.log(JSON.stringify(data, null, 2));
 return data ?? [];}
 
 export async function deleteBidItem(id: string) {

@@ -17,10 +17,17 @@ export const EditableTextInput = React.forwardRef<
       ref={ref}
       {...props}
       className={cn(
-        "h-9 w-full rounded-md border px-3 text-sm outline-none transition-colors",
+        `
+        w-full
+        bg-transparent
+        px-2
+        py-1
+        outline-none
+        transition-colors duration-100
+        `,
         editing
-          ? "border-blue-500 bg-slate-900"
-          : "border-transparent bg-transparent hover:border-slate-700 hover:bg-slate-800",
+          ? "bg-slate-800"
+          : "hover:bg-slate-800 cursor-text",
         className
       )}
     />

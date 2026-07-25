@@ -2,7 +2,8 @@ export type EditableTable =
   | "bid_items"
   | "shots"
   | "assets"
-  | "projects";
+  | "projects"
+  | "bids"
 
   export type EditableType =
   | "text"

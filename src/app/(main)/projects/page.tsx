@@ -25,7 +25,12 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const projects = await getProjects();
+  const projects = (await getProjects()).sort((a, b) =>
+    (a.project_name ?? "").localeCompare(b.project_name ?? "", undefined, {
+      sensitivity: "base",
+      numeric: true,
+    })
+  );
 
   const currency = new Intl.NumberFormat("en-GB", {
     style: "currency",

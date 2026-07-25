@@ -64,7 +64,7 @@ export default function EditableTaskCell({
             setEditing(false);
           }
         }}
-        className="w-16 rounded border border-slate-700 bg-slate-800 px-2 py-1 text-center outline-none"
+        className="w-full px-2 py-1 text-center outline-none bg-slate-800"
       />
     );
   }
@@ -72,9 +72,18 @@ export default function EditableTaskCell({
   return (
     <div
       onClick={() => !isPending && setEditing(true)}
-      className="min-h-8 cursor-text rounded px-2 py-1 text-center hover:bg-slate-800"
+      className="
+        w-full
+        px-2
+        py-1
+        text-center
+        cursor-text
+        transition-colors
+        duration-100
+        hover:bg-slate-800
+        "
     >
-      {value === 0 ? "" : value}
+      {value}
     </div>
   );
 }

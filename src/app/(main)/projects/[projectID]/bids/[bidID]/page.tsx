@@ -11,13 +11,20 @@ import { KpiCard } from "@/components/layout/KpiCard";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { getProductionStatuses } from "@/lib/getProductionStatuses";
 import BidItemsTable from "@/components/bid_items/BidItemsTable";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Props = {
-  params: Promise<{
-    projectID: string;
-    bidID: string;
-  }>;
+    params: Promise<{
+        projectID: string;
+        bidID: string;
+    }>;
+
+    searchParams: Promise<{
+        tab?: string;
+    }>;
 };
+
 
 const formatCurrency = (value: number) =>
   `£${value.toLocaleString(undefined, {
@@ -41,9 +48,18 @@ export async function generateMetadata({
   };
 }
 
-export default async function BidPage({ params }: Props) {
-  const { projectID, bidID } = await params;
+export default async function BidPage({
+    params,
+    searchParams,
+}: Props) {
 
+    const { projectID, bidID } = await params;
+    const { tab } = await searchParams;
+
+    const activeTab =
+        tab === "assets"
+            ? "assets"
+            : "shots";
   const project = await getProject(projectID);
   const bid = await getBid(bidID);
 
@@ -52,10 +68,19 @@ export default async function BidPage({ params }: Props) {
   }
 
   const projectTasks = await getProjectTasks(projectID);
-  console.log(projectTasks);
+  console.log("Project Tasks:", projectTasks);
+  console.log("Task Count:", projectTasks.length);
   const bidItems = await getBidItems(bidID);
+  const shotCount = bidItems.filter(
+    item => item.item_type === "shot"
+).length;
+
+const assetCount = bidItems.filter(
+    item => item.item_type === "asset"
+).length;
   const bidTasks = await getBidTasks(bidID);
   const productionStatuses = await getProductionStatuses();
+  console.log("PAGE productionStatuses:", productionStatuses);
   const calculatedBid = calculateBidTotals(
     bidItems,
     bidTasks,
@@ -116,7 +141,37 @@ export default async function BidPage({ params }: Props) {
           borderRight={false}
         />
       </KpiGrid>
+<div className="mb-6 flex gap-2">
 
+<Button
+    variant={
+        activeTab === "shots"
+            ? "default"
+            : "outline"
+    }
+>
+    <Link
+        href={`?tab=shots`}
+    >
+        Shots ({shotCount})
+    </Link>
+</Button>
+
+<Button
+    variant={
+        activeTab === "assets"
+            ? "default"
+            : "outline"
+    }
+>
+    <Link
+        href={`?tab=assets`}
+    >
+        Assets ({assetCount})
+    </Link>
+</Button>
+
+</div>
       <BidItemsTable
         projectID={projectID}
         bidID={bidID}
@@ -125,6 +180,7 @@ export default async function BidPage({ params }: Props) {
         projectTasks={projectTasks}
         productionStatuses={productionStatuses}
         calculatedBid={calculatedBid}
+        activeTab={activeTab}
       />
       
     </PageLayout>

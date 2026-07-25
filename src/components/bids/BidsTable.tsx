@@ -58,7 +58,14 @@ export function ProjectBidsTable({
       </thead>
 
       <tbody>
-        {bids.map((bid) => (
+        {[...bids]
+          .sort((a, b) =>
+            (a.name ?? "").localeCompare(b.name ?? "", undefined, {
+              sensitivity: "base",
+              numeric: true,
+            })
+          )
+          .map((bid) => (
           <tr
             key={bid.id}
             className="border-b border-slate-800 transition-colors hover:bg-slate-900/40"

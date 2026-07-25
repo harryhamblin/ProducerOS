@@ -24,17 +24,19 @@ type BidItemsTableProps = {
   projectTasks: ProjectTask[];
   calculatedBid: CalculatedBid;
   productionStatuses: ProductionStatusOption[];
+
+  activeTab: "shots" | "assets";
 };
 
 const itemColumns = [
   { key: "code", label: "Code" },
   { key: "thumbnail", label: "Thumbnail" },
+  { key: "status", label: "Status" },
   { key: "frames", label: "Frames" },
   { key: "cost_type", label: "Cost Type" },
   { key: "description", label: "Description" },
   { key: "vendor_notes", label: "Vendor Notes" },
   { key: "foreign_spend", label: "Foreign Spend" },
-  { key: "status", label: "Status" },
 ];
 
 const calculatedColumns = [
@@ -42,8 +44,6 @@ const calculatedColumns = [
   { key: "quantity", label: "Quantity" },
   { key: "total", label: "Total" },
 ];
-
-
 
 export default function BidItemsTable({
   projectID,
@@ -53,9 +53,31 @@ export default function BidItemsTable({
   projectTasks,
   calculatedBid,
   productionStatuses,
+  activeTab,
 }: BidItemsTableProps) {
-   return (
+const visibleItems = bidItems
+  .filter(item =>
+    activeTab === "shots"
+      ? item.item_type === "shot"
+      : item.item_type === "asset"
+  )
+  .sort((a, b) => {
+    const codeA = a.item_type === "shot"
+      ? a.shot?.shot_code ?? ""
+      : a.asset?.asset_code ?? "";
+
+    const codeB = b.item_type === "shot"
+      ? b.shot?.shot_code ?? ""
+      : b.asset?.asset_code ?? "";
+
+    return codeA.localeCompare(codeB, undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
+  });
+    return (
   <div className="overflow-x-auto rounded-xl border border-slate-800">
+    
     <table className="min-w-full border-collapse text-sm">
           <thead className="sticky top-0 z-10 bg-slate-950">
             <tr className="border-b border-slate-800">
@@ -70,8 +92,8 @@ export default function BidItemsTable({
 
               {projectTasks.map((task) => (
                 <th
-                  key={task.task_id}
-                  className="px-4 py-3 text-center font-medium text-slate-400"
+                  key={task.task_id}  
+                  className="w-20 min-w-20 px-4 py-3 text-center font-medium text-slate-400"
                 >
                   {task.name}
                 </th>
@@ -106,7 +128,7 @@ export default function BidItemsTable({
                 </td>
               </tr>
             ) : (
-              bidItems.map((item) => {
+              visibleItems.map((item) => {
                 const taskLookup = bidTasks.get(item.id) ?? new Map();
                 const calculatedItem = calculatedBid.items.find(
                   calculated => calculated.id === item.id
@@ -127,8 +149,13 @@ export default function BidItemsTable({
 
                 const description =
                   item.item_type === "shot"
-                    ? item.shot?.description
-                    : item.asset?.description;
+                    ? item.shot?.description ?? null
+                    : item.asset?.description ?? null;
+
+                    const productionStatusId =
+                  item.item_type === "shot"
+                    ? item.shot?.status_id
+                    : item.asset?.status_id;
 
                 return (
                   <tr
@@ -150,23 +177,23 @@ export default function BidItemsTable({
                           "-"
                       )}
                     </td>
-                    <td className="px-4 py-3">
-                      <EditableSelect
-                          table={item.item_type === "shot" ? "shots" : "assets"}
-                          rowId={
-                              item.item_type === "shot"
-                                  ? item.shot!.id
-                                  : item.asset!.id
-                          }
-                          field="status_id"
-                          value={
-                              item.item_type === "shot"
-                                  ? item.shot!.status_id
-                                  : item.asset!.status_id
-                          }
-                          options={productionStatuses}
-                          revalidatePath={`/projects/${projectID}/bids/${bidID}`}
-                      />
+                    <td className="w-32 min-w-32 px-4 py-3">
+                    <EditableSelect
+                        table={item.item_type === "shot" ? "shots" : "assets"}
+                        rowId={
+                            item.item_type === "shot"
+                                ? item.shot!.id
+                                : item.asset!.id
+                        }
+                        field="status_id"
+                        value={
+                            item.item_type === "shot"
+                                ? item.shot!.status_id
+                                : item.asset!.status_id
+                        }
+                        options={productionStatuses}
+                        revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                    />
                     </td>                    
 
                     <td className="px-4 py-3">
@@ -180,7 +207,7 @@ export default function BidItemsTable({
                       />
                     </td>
 
-                    <td className="px-4 py-3">
+                    <td className="w-30 min-w-30 px-4 py-3">
                       <EditableSelect
                           table="bid_items"
                           rowId={item.id}
@@ -190,11 +217,20 @@ export default function BidItemsTable({
                           revalidatePath={`/projects/${projectID}/bids/${bidID}`}
                         />
                     </td>
-
                     <td className="px-4 py-3">
-                        {description ?? "-"}
+                      <EditableCell
+                          rowId={
+                              item.item_type === "shot"
+                                  ? item.shot!.id
+                                  : item.asset!.id
+                          }
+                          field="description"
+                          value={description}
+                          table={item.item_type === "shot" ? "shots" : "assets"}
+                          type="text"
+                          revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                      />
                     </td>
-
                     <td className="px-4 py-3">
                       <EditableCell
                         rowId={item.id}
@@ -220,12 +256,15 @@ export default function BidItemsTable({
                     {projectTasks.map((task) => {
                       const taskData = taskLookup.get(task.id);
 
+                      if (!taskData) {
+                          throw new Error(`Missing task ${task.id}`);
+                      }
+console.log("Production Statuses:", productionStatuses);
                       return (
-                        <td
-                          key={task.task_id}
-                          className="px-4 px-3 text-center"
-                        >
-                          {taskData ? (
+                          <td
+                              key={task.task_id}
+                              className="w-20 min-w-20  px-4 py-3 text-center"
+                          >
                               <EditableTaskCell
                                   table="bid_tasks"
                                   rowId={taskData.id}
@@ -233,10 +272,7 @@ export default function BidItemsTable({
                                   value={Number(taskData.duration_days ?? 0)}
                                   revalidatePath={`/projects/${projectID}/bids/${bidID}`}
                               />
-                          ) : (
-                              <span className="text-slate-500">–</span>
-                          )}
-                        </td>
+                          </td>
                       );
                     })}
 
