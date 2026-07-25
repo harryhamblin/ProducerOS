@@ -12,129 +12,124 @@ export async function createBidItem(
 
   let shotID: string | null = null;
   let assetID: string | null = null;
-  let itemName = "";
 
   // ------------------------------------------------------------------
-  // Create the underlying Shot / Asset (or determine custom name)
+  // Create Shot
   // ------------------------------------------------------------------
 
   if (itemType === "shot") {
-    const { data: shots, error } = await supabase
+    const { data: lastShot, error: lastShotError } = await supabase
       .from("shots")
       .select("shot_code")
-      .eq("project_id", projectID);
+      .eq("project_id", projectID)
+      .order("shot_code", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-    if (error) throw error;
-
-    let highest = 0;
-
-    for (const shot of shots ?? []) {
-      const match = shot.shot_code?.match(/^SHOT(\d+)$/);
-
-      if (match) {
-        highest = Math.max(highest, Number(match[1]));
-      }
+    if (lastShotError) {
+      console.error("Failed to fetch last shot:", lastShotError);
+      throw new Error(lastShotError.message);
     }
 
-    itemName = `SHOT${String(highest + 1).padStart(3, "0")}`;
+    const nextNumber = lastShot
+      ? Number(lastShot.shot_code.replace(/\D/g, "")) + 1
+      : 1;
+
+    const nextShotCode = `SHOT${String(nextNumber).padStart(3, "0")}`;
 
     const { data: shot, error: shotError } = await supabase
       .from("shots")
       .insert({
         project_id: projectID,
-        shot_code: itemName,
+        shot_code: nextShotCode,
+        status_id: 1,
       })
       .select()
       .single();
 
-    if (shotError) throw shotError;
+    if (shotError) {
+      console.error("Failed to create shot:", shotError);
+      throw new Error(shotError.message);
+    }
 
     shotID = shot.id;
   }
 
+  // ------------------------------------------------------------------
+  // Create Asset
+  // ------------------------------------------------------------------
+
   else if (itemType === "asset") {
-    const { data: assets, error } = await supabase
+    const { data: lastAsset, error: lastAssetError } = await supabase
       .from("assets")
       .select("asset_code")
-      .eq("project_id", projectID);
+      .eq("project_id", projectID)
+      .order("asset_code", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-    if (error) throw error;
-
-    let highest = 0;
-
-    for (const asset of assets ?? []) {
-      const match = asset.asset_code?.match(/^ASSET(\d+)$/);
-
-      if (match) {
-        highest = Math.max(highest, Number(match[1]));
-      }
+    if (lastAssetError) {
+      console.error("Failed to fetch last asset:", lastAssetError);
+      throw new Error(lastAssetError.message);
     }
 
-    itemName = `ASSET${String(highest + 1).padStart(3, "0")}`;
+    const nextNumber = lastAsset
+      ? Number(lastAsset.asset_code.replace(/\D/g, "")) + 1
+      : 1;
+
+    const nextAssetCode = `ASSET${String(nextNumber).padStart(3, "0")}`;
 
     const { data: asset, error: assetError } = await supabase
       .from("assets")
       .insert({
         project_id: projectID,
-        asset_code: itemName,
-        name: itemName,
+        asset_code: nextAssetCode,
         asset_type: "Other",
-        status: "Pending",
+        status_id: 1,
       })
       .select()
       .single();
 
-    if (assetError) throw assetError;
+    if (assetError) {
+      console.error("Failed to create asset:", assetError);
+      throw new Error(assetError.message);
+    }
 
     assetID = asset.id;
   }
 
+  // ------------------------------------------------------------------
+  // Custom Items
+  // ------------------------------------------------------------------
+
   else {
-    const { data: bidItems, error } = await supabase
-      .from("bid_items")
-      .select("name")
-      .eq("bid_id", bidID);
-
-    if (error) throw error;
-
-    let highest = 0;
-
-    for (const item of bidItems ?? []) {
-      const match = item.name?.match(/^ITEM(\d+)$/);
-
-      if (match) {
-        highest = Math.max(highest, Number(match[1]));
-      }
-    }
-
-    itemName = `ITEM${String(highest + 1).padStart(3, "0")}`;
+    // Custom items don't create a Shot or Asset yet.
   }
 
   // ------------------------------------------------------------------
-  // Create the Bid Item
+  // Create Bid Item
   // ------------------------------------------------------------------
 
-  const { data: bidItem, error } = await supabase
+  const { data: bidItem, error: bidItemError } = await supabase
     .from("bid_items")
     .insert({
       bid_id: bidID,
       item_type: itemType,
       shot_id: shotID,
       asset_id: assetID,
-      name: itemName,
       quantity: 1,
-      cost_type: "Per Item",
+      cost_type: "Full Cost",
     })
     .select()
     .single();
 
-  if (error) {
-    console.error(error);
-    throw error;
+  if (bidItemError) {
+    console.error("Failed to create bid item:", bidItemError);
+    throw new Error(bidItemError.message);
   }
 
   // ------------------------------------------------------------------
-  // Create empty bid tasks
+  // Create Bid Tasks
   // ------------------------------------------------------------------
 
   const { data: tasks, error: tasksError } = await supabase
@@ -142,7 +137,10 @@ export async function createBidItem(
     .select("id")
     .order("sort_order");
 
-  if (tasksError) throw tasksError;
+  if (tasksError) {
+    console.error("Failed to load tasks:", tasksError);
+    throw new Error(tasksError.message);
+  }
 
   const bidTasks =
     tasks?.map((task) => ({
@@ -157,7 +155,10 @@ export async function createBidItem(
       .from("bid_tasks")
       .insert(bidTasks);
 
-    if (bidTaskError) throw bidTaskError;
+    if (bidTaskError) {
+      console.error("Failed to create bid tasks:", bidTaskError);
+      throw new Error(bidTaskError.message);
+    }
   }
 
   revalidatePath(`/projects/${projectID}/bids/${bidID}`);

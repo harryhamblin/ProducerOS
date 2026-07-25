@@ -18,8 +18,20 @@ export type Asset =
 
 export type BidItem =
   Database["public"]["Tables"]["bid_items"]["Row"] & {
-    shot: Database["public"]["Tables"]["shots"]["Row"] | null;
-    asset: Database["public"]["Tables"]["assets"]["Row"] | null;
+    shot?: {
+      id: string;
+      shot_code: string;
+      description: string | null;
+      thumbnail_url: string | null;
+    } | null;
+
+    asset?: {
+      id: string;
+      asset_code: string;
+      name: string;
+      thumbnail_url: string | null;
+      description: string | null;
+    } | null;
   };
 
 export type BidTask =

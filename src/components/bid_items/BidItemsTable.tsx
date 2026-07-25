@@ -25,7 +25,7 @@ type BidItemsTableProps = {
 };
 
 const itemColumns = [
-  { key: "name", label: "Name" },
+  { key: "code", label: "Code" },
   { key: "thumbnail", label: "Thumbnail" },
   { key: "frames", label: "Frames" },
   { key: "cost_type", label: "Cost Type" },
@@ -39,6 +39,8 @@ const calculatedColumns = [
   { key: "quantity", label: "Quantity" },
   { key: "total", label: "Total" },
 ];
+
+
 
 export default function BidItemsTable({
   projectID,
@@ -109,32 +111,39 @@ export default function BidItemsTable({
                 if (!calculatedItem) {
                   return null;
                 }
+                const itemCode =
+                  item.item_type === "shot"
+                    ? item.shot?.shot_code
+                    : item.asset?.asset_code;
+
+                const thumbnail =
+                  item.item_type === "shot"
+                    ? item.shot?.thumbnail_url
+                    : item.asset?.thumbnail_url;
+
+                const description =
+                  item.item_type === "shot"
+                    ? item.shot?.description
+                    : item.asset?.description;
 
                 return (
                   <tr
                     key={item.id}
                     className="border-b border-slate-800 transition-colors hover:bg-slate-900/40"
                   >
-                    <td className="px-4 py-3">
-                      <EditableCell
-                        table="bid_items"
-                        rowId={item.id}
-                        field="name"
-                        value={item.name}
-                        type="text"
-                        revalidatePath={`/projects/${projectID}/bids/${bidID}`}
-                      />
+                    <td className="px-4 py-3 font-medium">
+                      {itemCode ?? "—"}
                     </td>
 
                     <td className="px-4 py-3">
-                      {item.thumbnail_url ? (
-                        <img
-                          src={item.thumbnail_url}
-                          alt=""
-                          className="h-10 w-16 rounded object-cover"
-                        />
+                      {thumbnail ? (
+                          <img
+                              src={thumbnail}
+                              alt=""
+                              className="h-10 w-16 rounded object-cover"
+                          />
                       ) : (
-                        "-"
+                          "-"
                       )}
                     </td>
 
@@ -161,14 +170,7 @@ export default function BidItemsTable({
                     </td>
 
                     <td className="px-4 py-3">
-                      <EditableCell
-                        rowId={item.id}
-                        field="vfx_work_requirements"
-                        value={item.description}
-                        table="bid_items"
-                        type="text"
-                        revalidatePath={`/projects/${projectID}/bids/${bidID}`}
-                      />
+                        {description ?? "-"}
                     </td>
 
                     <td className="px-4 py-3">
@@ -245,7 +247,7 @@ export default function BidItemsTable({
                     <td className="px-4 py-3 text-center">
                       <DeleteBidItemButton
                         bidItemId={item.id}
-                        bidItemName={item.name!}
+                        bidItemName={itemCode ?? "Untitled"}
                         projectID={projectID}
                         bidID={bidID}
                       />
