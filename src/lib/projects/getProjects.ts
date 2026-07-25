@@ -95,7 +95,6 @@ export async function updateProject(
     .from("projects")
     .update({
       ...updates,
-      updated_at: new Date().toISOString(),
     })
     .eq("id", id)
     .select()
@@ -107,4 +106,17 @@ export async function updateProject(
   }
 
   return data as Project;
+}
+
+export async function deleteProject(id: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    throw error;
+  }
 }

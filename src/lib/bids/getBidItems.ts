@@ -14,3 +14,14 @@ const { data } = await supabase
   .order("sort_order");
 
 return data ?? [];}
+
+export async function deleteBidItem(id: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("bid_items")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+}

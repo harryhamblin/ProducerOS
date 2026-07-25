@@ -10,7 +10,7 @@ import { KpiGrid } from "@/components/layout/KpiGrid";
 import { KpiCard } from "@/components/layout/KpiCard";
 import { PageLayout } from "@/components/layout/PageLayout";
 
-import BidItemsTable from "@/components/bids/BidItemsTable";
+import BidItemsTable from "@/components/bid_items/BidItemsTable";
 
 type Props = {
   params: Promise<{

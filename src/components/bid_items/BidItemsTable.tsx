@@ -7,6 +7,7 @@ import EditableTaskCell from "@/components/editable/EditableTaskCell";
 import { Button } from "@/components/ui/button";
 import { calculateBidTotals } from "@/lib/bids/calculateBidTotals";
 import { cost_type } from "@/app/(main)/projects/[projectID]/bids/constants";
+import { DeleteBidItemButton } from "./DeleteBidItemButton";
 import type {
   BidItem,
   BidTaskLookup,
@@ -78,6 +79,9 @@ export default function BidItemsTable({
                   {column.label}
                 </th>
               ))}
+              <th className="px-4 py-3 text-center font-medium text-slate-400">
+              Delete
+            </th>
             </tr>
           </thead>
 
@@ -115,7 +119,7 @@ export default function BidItemsTable({
                       <EditableCell
                         table="bid_items"
                         rowId={item.id}
-                        field="item_code"
+                        field="name"
                         value={item.name}
                         type="text"
                         revalidatePath={`/projects/${projectID}/bids/${bidID}`}
@@ -237,6 +241,14 @@ export default function BidItemsTable({
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <DeleteBidItemButton
+                        bidItemId={item.id}
+                        bidItemName={item.name!}
+                        projectID={projectID}
+                        bidID={bidID}
+                      />
                     </td>
                   </tr>
                 );

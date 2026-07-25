@@ -44,3 +44,16 @@ export async function getBid(id: string): Promise<Bid | null> {
 
   return data as Bid | null;
 }
+
+export async function deleteBid(id: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("bids")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    throw error;
+  }
+}

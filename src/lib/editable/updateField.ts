@@ -6,16 +6,27 @@ export async function updateField(
   field: string,
   value: unknown
 ) {
+  console.log("Updating", {
+    table,
+    rowId,
+    field,
+    value,
+  });
+
   const supabase = await createClient();
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from(table)
     .update({
       [field]: value,
     })
-    .eq("id", rowId);
+    .eq("id", rowId)
+    .select();
+
+  console.log("Result:", data);
 
   if (error) {
+    console.error(error);
     throw error;
   }
 }

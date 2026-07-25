@@ -3,6 +3,8 @@ import { FolderOpen, Plus } from "lucide-react";
 
 import { EditableCell } from "@/components/editable/EditableCell";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "../ui/StatusBadge";
+import { DeleteBidButton } from "./DeleteBidButton";
 
 interface ProjectBidsTableProps {
   projectId: string;
@@ -23,10 +25,6 @@ export function ProjectBidsTable({
     <table className="w-full border-collapse text-sm">
       <thead className="sticky top-0 z-10 bg-slate-950">
         <tr className="border-b border-slate-800">
-          <th className="px-6 py-3 text-left font-medium text-slate-400">
-            Open
-          </th>
-
           <th className="px-6 py-3 text-left font-medium text-slate-400">
             Bid Name
           </th>
@@ -50,6 +48,12 @@ export function ProjectBidsTable({
           <th className="px-6 py-3 text-left font-medium text-slate-400">
             Total
           </th>
+          <th className="px-6 py-3 text-left font-medium text-slate-400">
+            Open
+          </th>
+          <th className="px-6 py-3 text-left font-medium text-slate-400">
+            Delete
+          </th>
         </tr>
       </thead>
 
@@ -59,15 +63,6 @@ export function ProjectBidsTable({
             key={bid.id}
             className="border-b border-slate-800 transition-colors hover:bg-slate-900/40"
           >
-            <td className="px-4 py-3">
-              <Link
-                href={`/projects/${projectId}/bids/${bid.id}`}
-                className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-slate-800 hover:text-white"
-                title="Open Bid"
-              >
-                <FolderOpen className="h-4 w-4" />
-              </Link>
-            </td>
 
             <td className="px-4 py-3">
               <EditableCell
@@ -92,9 +87,10 @@ export function ProjectBidsTable({
             </td>
 
             <td className="px-4 py-3">
-              <span className="inline-flex rounded-full bg-slate-800 px-2 py-1 text-xs text-slate-300">
-                {bid.status ?? "Unknown"}
-              </span>
+              <StatusBadge
+                name={bid.status?.name ?? "Unknown"}
+                colour={bid.status?.colour ?? "#64748b"}
+              />
             </td>
 
             <td className="px-4 py-3">
@@ -108,12 +104,27 @@ export function ProjectBidsTable({
             <td className="px-6 py-3 font-medium">
               {currency.format(bid.totals.grandTotal)}
             </td>
+            <td className="px-4 py-3">
+              <Link
+                href={`/projects/${projectId}/bids/${bid.id}`}
+                className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-slate-800 hover:text-white"
+                title="Open Bid"
+              >
+                <FolderOpen className="h-4 w-4" />
+              </Link>
+            </td>
+            <td className="px-4 py-3">
+              <DeleteBidButton
+                bidId={bid.id}
+                bidItemName={bid.name}
+              />
+            </td>
           </tr>
         ))}
 
         <tr>
           <td
-            colSpan={7}
+            colSpan={8}
             className="border-t border-dashed border-slate-700 p-0"
           >
             <form
