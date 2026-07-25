@@ -14,6 +14,7 @@ import type {
   ProjectTask,
   CalculatedBid,
 } from "@/types/bid";
+import type { ProductionStatusOption } from "@/lib/getProductionStatuses";
 
 type BidItemsTableProps = {
   projectID: string;
@@ -22,6 +23,7 @@ type BidItemsTableProps = {
   bidTasks: BidTaskLookup;
   projectTasks: ProjectTask[];
   calculatedBid: CalculatedBid;
+  productionStatuses: ProductionStatusOption[];
 };
 
 const itemColumns = [
@@ -32,6 +34,7 @@ const itemColumns = [
   { key: "description", label: "Description" },
   { key: "vendor_notes", label: "Vendor Notes" },
   { key: "foreign_spend", label: "Foreign Spend" },
+  { key: "status", label: "Status" },
 ];
 
 const calculatedColumns = [
@@ -49,6 +52,7 @@ export default function BidItemsTable({
   bidTasks,
   projectTasks,
   calculatedBid,
+  productionStatuses,
 }: BidItemsTableProps) {
    return (
   <div className="overflow-x-auto rounded-xl border border-slate-800">
@@ -146,6 +150,24 @@ export default function BidItemsTable({
                           "-"
                       )}
                     </td>
+                    <td className="px-4 py-3">
+                      <EditableSelect
+                          table={item.item_type === "shot" ? "shots" : "assets"}
+                          rowId={
+                              item.item_type === "shot"
+                                  ? item.shot!.id
+                                  : item.asset!.id
+                          }
+                          field="status_id"
+                          value={
+                              item.item_type === "shot"
+                                  ? item.shot!.status_id
+                                  : item.asset!.status_id
+                          }
+                          options={productionStatuses}
+                          revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                      />
+                    </td>                    
 
                     <td className="px-4 py-3">
                       <EditableCell

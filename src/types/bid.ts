@@ -16,6 +16,12 @@ export type Shot =
 export type Asset =
     Database["public"]["Tables"]["assets"]["Row"];
 
+export type ProductionStatus = {
+  id: number;
+  name: string;
+  colour: string;
+};
+
 export type BidItem =
   Database["public"]["Tables"]["bid_items"]["Row"] & {
     shot?: {
@@ -23,14 +29,18 @@ export type BidItem =
       shot_code: string;
       description: string | null;
       thumbnail_url: string | null;
+      status_id: number;
+      production_statuses?: ProductionStatus | null;
     } | null;
 
     asset?: {
       id: string;
       asset_code: string;
-      name: string;
-      thumbnail_url: string | null;
+      asset_type: string;
       description: string | null;
+      thumbnail_url: string | null;
+      status_id: number;
+      production_statuses?: ProductionStatus | null;
     } | null;
   };
 

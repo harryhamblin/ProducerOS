@@ -9,7 +9,7 @@ import { DetailHeader } from "@/components/layout/DetailHeader";
 import { KpiGrid } from "@/components/layout/KpiGrid";
 import { KpiCard } from "@/components/layout/KpiCard";
 import { PageLayout } from "@/components/layout/PageLayout";
-
+import { getProductionStatuses } from "@/lib/getProductionStatuses";
 import BidItemsTable from "@/components/bid_items/BidItemsTable";
 
 type Props = {
@@ -55,7 +55,7 @@ export default async function BidPage({ params }: Props) {
   console.log(projectTasks);
   const bidItems = await getBidItems(bidID);
   const bidTasks = await getBidTasks(bidID);
-
+  const productionStatuses = await getProductionStatuses();
   const calculatedBid = calculateBidTotals(
     bidItems,
     bidTasks,
@@ -123,6 +123,7 @@ export default async function BidPage({ params }: Props) {
         bidItems={bidItems}
         bidTasks={bidTasks}
         projectTasks={projectTasks}
+        productionStatuses={productionStatuses}
         calculatedBid={calculatedBid}
       />
       

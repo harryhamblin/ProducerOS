@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 
-import { updateEditableField } from "@/actions/updateField";
-
-import { EditableCellProps } from "./types";
+import { updateField } from "@/actions/updateField";
+import type { EditableCellProps } from "@/types/editable"
 
 import {
   formatDisplayValue,
@@ -50,10 +49,10 @@ export function EditableInput({
   }
 
   function save() {
-    let parsed: unknown;
+    let parsed: string | number | null;
 
     try {
-      parsed = parseValue(text, type);
+      parsed = parseValue(text, type) as string | number | null;
     } catch (err) {
       alert(err instanceof Error ? err.message : "Invalid value");
       cancel();
@@ -64,12 +63,12 @@ export function EditableInput({
 
     startTransition(async () => {
       try {
-        await updateEditableField({
+        await updateField({
           table,
           rowId,
           field,
           value: parsed,
-          revalidate: revalidatePath,
+          revalidatePath,
         });
       } catch {
         setText(formatEditorValue(value));

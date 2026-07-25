@@ -1,4 +1,10 @@
-export type EditableType =
+export type EditableTable =
+  | "bid_items"
+  | "shots"
+  | "assets"
+  | "projects";
+
+  export type EditableType =
   | "text"
   | "number"
   | "currency"
@@ -8,11 +14,12 @@ export type EditableType =
 
 export interface SelectOption {
   label: string;
-  value: string;
+  value: string | number;
+  colour?: string;
 }
 
 export interface EditableCellProps {
-  table: string;
+  table: EditableTable;
   rowId: string;
 
   field: string;

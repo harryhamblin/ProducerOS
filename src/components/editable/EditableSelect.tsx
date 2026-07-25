@@ -1,13 +1,58 @@
 "use client";
 
-import { EditableCellProps } from "./types";
+import { useState, useTransition } from "react";
+
+import { updateField } from "@/actions/updateField";
+import type { EditableCellProps } from "@/types/editable";
 
 export function EditableSelect({
+  table,
+  rowId,
+  field,
   value,
+  options = [],
+  revalidatePath,
+  disabled,
 }: EditableCellProps) {
+  const [currentValue, setCurrentValue] = useState(
+    value?.toString() ?? ""
+  );
+
+  const [, startTransition] = useTransition();
+
+  function handleChange(newValue: string) {
+    setCurrentValue(newValue);
+
+    const selected = options.find(
+      option => option.value.toString() === newValue
+    );
+
+    startTransition(async () => {
+      await updateField({
+        table,
+        rowId,
+        field,
+        value: selected?.value ?? newValue,
+        revalidatePath,
+      });
+    });
+  }
+
   return (
-    <div className="rounded px-2 py-1 text-slate-300">
-      {value ?? "—"}
-    </div>
+    <select
+      value={currentValue}
+      disabled={disabled}
+      onChange={(e) => handleChange(e.target.value)}
+      className="w-full rounded bg-transparent px-2 py-1 outline-none"
+    >
+      {options.map(option => (
+        <option
+          key={option.value.toString()}
+          value={option.value.toString()}
+        >
+          {option.label}
+        </option>
+      ))}
+    </select>
   );
 }
