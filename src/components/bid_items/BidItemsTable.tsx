@@ -6,7 +6,7 @@ import { EditableSelect } from "../editable/EditableSelect";
 import EditableTaskCell from "@/components/editable/EditableTaskCell";
 import { Button } from "@/components/ui/button";
 import { calculateBidTotals } from "@/lib/bids/calculateBidTotals";
-import { cost_type } from "@/app/(main)/projects/[projectID]/bids/constants";
+import { cost_type } from "@/app/(main)/projects/[projectID]/finance/bids/constants";
 import { DeleteBidItemButton } from "./DeleteBidItemButton";
 import type {
   BidItem,

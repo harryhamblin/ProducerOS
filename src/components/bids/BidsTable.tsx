@@ -113,7 +113,7 @@ export function ProjectBidsTable({
             </td>
             <td className="px-4 py-3">
               <Link
-                href={`/projects/${projectId}/bids/${bid.id}`}
+                href={`/projects/${projectId}/finance/bids/${bid.id}`}
                 className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-slate-800 hover:text-white"
                 title="Open Bid"
               >
