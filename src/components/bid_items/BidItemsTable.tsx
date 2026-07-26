@@ -161,11 +161,29 @@ const visibleItems = bidItems
                   <tr
                     key={item.id}
                     className="border-b border-slate-800 transition-colors hover:bg-slate-900/40"
-                  >
-                    <td className="px-4 py-3 font-medium">
-                      {itemCode ?? "—"}
-                    </td>
-
+                  >                    
+                  <td className="w-32 min-w-32 px-4 py-3">
+                      <EditableCell
+                        rowId={
+                          item.item_type === "shot"
+                            ? item.shot!.id
+                            : item.asset!.id
+                        }
+                        field={
+                          item.item_type === "shot"
+                            ? "shot_code"
+                            : "asset_code"
+                        }
+                        value={
+                          item.item_type === "shot"
+                            ? item.shot!.shot_code
+                            : item.asset!.asset_code
+                        }
+                        table={item.item_type === "shot" ? "shots" : "assets"}
+                        type="text"
+                        revalidatePath={`/projects/${projectID}/finance/bids/${bidID}`}
+                      />
+                  </td>
                     <td className="px-4 py-3">
                       {thumbnail ? (
                           <img
@@ -192,7 +210,7 @@ const visibleItems = bidItems
                                 : item.asset!.status_id
                         }
                         options={productionStatuses}
-                        revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                        revalidatePath={`/projects/${projectID}/finance/bids/${bidID}`}
                     />
                     </td>                    
 
@@ -203,7 +221,7 @@ const visibleItems = bidItems
                         value={item.frames}
                         table="bid_items"
                         type="number"
-                        revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                        revalidatePath={`/projects/${projectID}/finance/bids/${bidID}`}
                       />
                     </td>
 
@@ -214,7 +232,7 @@ const visibleItems = bidItems
                           field="cost_type"
                           value={item.cost_type}
                           options={cost_type}
-                          revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                          revalidatePath={`/projects/${projectID}/finance/bids/${bidID}`}
                         />
                     </td>
                     <td className="px-4 py-3">
@@ -228,7 +246,7 @@ const visibleItems = bidItems
                           value={description}
                           table={item.item_type === "shot" ? "shots" : "assets"}
                           type="text"
-                          revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                          revalidatePath={`/projects/${projectID}/finance/bids/${bidID}`}
                       />
                     </td>
                     <td className="px-4 py-3">
@@ -238,7 +256,7 @@ const visibleItems = bidItems
                         value={item.vendor_notes}
                         table="bid_items"
                         type="text"
-                        revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                        revalidatePath={`/projects/${projectID}/finance/bids/${bidID}`}
                       />
                     </td>
 
@@ -249,7 +267,7 @@ const visibleItems = bidItems
                         value={item.foreign_spend}
                         table="bid_items"
                         type="number"
-                        revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                        revalidatePath={`/projects/${projectID}/finance/bids/${bidID}`}
                       />
                     </td>
 
@@ -270,7 +288,7 @@ console.log("Production Statuses:", productionStatuses);
                                   rowId={taskData.id}
                                   field="duration_days"
                                   value={Number(taskData.duration_days ?? 0)}
-                                  revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                                  revalidatePath={`/projects/${projectID}/finance/bids/${bidID}`}
                               />
                           </td>
                       );
@@ -291,7 +309,7 @@ console.log("Production Statuses:", productionStatuses);
                         value={item.quantity}
                         table="bid_items"
                         type="number"
-                        revalidatePath={`/projects/${projectID}/bids/${bidID}`}
+                        revalidatePath={`/projects/${projectID}/finance/bids/${bidID}`}
                       />
                     </td>
 

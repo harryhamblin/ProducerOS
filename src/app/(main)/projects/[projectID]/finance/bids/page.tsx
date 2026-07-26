@@ -42,8 +42,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectPage({ params }: Props) {
   const { projectID } = await params;
-  console.log("params:", await params);
-console.log("projectID:", projectID);
 
   const [project, bids] = await Promise.all([
     getProject(projectID),

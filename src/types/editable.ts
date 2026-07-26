@@ -4,6 +4,7 @@ export type EditableTable =
   | "assets"
   | "projects"
   | "bids"
+  | "project_task_rates";
 
   export type EditableType =
   | "text"

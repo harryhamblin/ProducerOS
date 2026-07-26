@@ -25,10 +25,15 @@ export default async function FinancePage({ params }: Props) {
       description: "Coming soon",
       href: `/projects/${projectID}/finance/reports`,
     },
+    {
+      title: "Rate Card",
+      description: "Project task rates",
+      href: `/projects/${projectID}/finance/rate-card`,
+    },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-10 py-10">
       <div>
         <h1 className="text-3xl font-semibold">
           Finance
@@ -46,7 +51,7 @@ export default async function FinancePage({ params }: Props) {
             href={module.href}
             className="rounded-lg border bg-card p-6 transition hover:border-primary hover:shadow"
           >
-            <h2 className="text-xl font-semibold">
+            <h2 className="text-xl text-muted-foreground font-semibold">
               {module.title}
             </h2>
 

@@ -16,11 +16,6 @@ export default async function ProjectWorkspace({ params }: Props) {
       href: `/projects/${projectID}/finance`,
     },
     {
-      title: "Rate Card",
-      description: "Project task rates",
-      href: `/projects/${projectID}/rate-card`,
-    },
-    {
       title: "Shots",
       description: "Shot database",
       href: `/projects/${projectID}/shots`,
@@ -38,7 +33,7 @@ export default async function ProjectWorkspace({ params }: Props) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-10 py-10">
       <div>
         <h1 className="text-3xl font-semibold">Project Workspace</h1>
         <p className="text-muted-foreground">
@@ -53,7 +48,7 @@ export default async function ProjectWorkspace({ params }: Props) {
             href={module.href}
             className="rounded-lg border bg-card p-6 transition hover:border-primary hover:shadow"
           >
-            <h2 className="text-xl font-semibold">{module.title}</h2>
+            <h2 className="text-xl text-muted-foreground font-semibold">{module.title}</h2>
 
             <p className="mt-2 text-sm text-muted-foreground">
               {module.description}
