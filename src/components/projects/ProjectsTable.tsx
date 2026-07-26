@@ -9,9 +9,16 @@ import { StatusBadge } from "../ui/StatusBadge";
 import { Trash2 } from "lucide-react";
 import { DeleteProjectButton } from "./DeleteProjectButton";
 import { deleteProjectAction } from "@/actions/projects/projects";
+import type { Project } from "@/types/project";
+import type { ProjectSummary } from "@/types/project";
+
+type ProjectWithSummary = {
+  project: Project;
+  summary: ProjectSummary;
+};
 
 interface ProjectsTableProps {
-  projects: any[];
+  projects: ProjectWithSummary[];
   createNewProject: () => Promise<void>;
 }
 
@@ -24,55 +31,59 @@ export function ProjectsTable({
       <thead className="sticky top-0 z-10 bg-slate-950">
         <tr className="border-b border-slate-800">
 
-          <th className="px-6 py-3 text-left font-medium text-slate-400">
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
             Project
           </th>
 
-          <th className="px-4 py-3 text-left font-medium text-slate-400">
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
             Code
           </th>
 
-          <th className="px-4 py-3 text-left font-medium text-slate-400">
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
             Status
           </th>
 
-          <th className="px-4 py-3 text-left font-medium text-slate-400">
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
             Award
           </th>
 
-          <th className="px-4 py-3 text-left font-medium text-slate-400">
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
             Foreign
           </th>
 
-          <th className="px-4 py-3 text-left font-medium text-slate-400">
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
             Foreign %
           </th>
 
-          <th className="px-6 py-3 text-left font-medium text-slate-400">
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
             Shots
           </th>
 
-          <th className="px-6 py-3 text-left font-medium text-slate-400">
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
+            Assets
+          </th>
+
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
             Open
           </th>
 
-          <th className="px-6 py-3 text-left font-medium text-slate-400">
+          <th className="px-4 py-3 texte-center font-medium text-slate-400">
             Delete
           </th>
         </tr>
       </thead>
 
       <tbody>
-        {projects.map((project) => {
+        {projects.map(({ project, summary }) => {
           const foreignSpendPercentage = getForeignSpendPercentage(
-            project.current_award,
-            project.foreign_spend
+            summary.currentAward,
+            summary.foreignSpend
           );
 
           return (
             <tr
               key={project.id}
-              className="border-b border-slate-800 transition-colors hover:bg-slate-900/40"
+              className="border-b border-slate-800 transition-colors text-center hover:bg-slate-900/40 "
             >
 
               <td className="px-4 py-3">
@@ -104,27 +115,21 @@ export function ProjectsTable({
               />
               </td>
 
-              <TableCell
-                table="projects"
-                rowId={project.id}
-                field="current_award"
-                value={project.current_award}
-                editable
-                type="currency"
-                revalidatePath="/projects"
-                className="px-4 py-3"
-              />
+              <td className="px-4 py-3">
+                {new Intl.NumberFormat("en-GB", {
+                  style: "currency",
+                  currency: "GBP",
+                  maximumFractionDigits: 0,
+                }).format(summary.currentAward)}
+              </td>
 
-              <TableCell
-                table="projects"
-                rowId={project.id}
-                field="foreign_spend"
-                value={project.foreign_spend}
-                editable
-                type="currency"
-                revalidatePath="/projects"
-                className="px-4 py-3"
-              />
+              <td className="px-4 py-3">
+                {new Intl.NumberFormat("en-GB", {
+                  style: "currency",
+                  currency: "GBP",
+                  maximumFractionDigits: 0,
+                }).format(summary.foreignSpend)}
+              </td>
 
               <td className="px-4 py-3">
                 {foreignSpendPercentage !== null
@@ -133,7 +138,11 @@ export function ProjectsTable({
               </td>
 
               <td className="px-4 py-3">
-                {project.item_count ?? "—"}
+                {summary.shotCount}
+              </td>
+
+              <td className="px-4 py-3">
+                {summary.assetCount}
               </td>
               <td className="px-4 py-3">
                 <Link
@@ -144,7 +153,7 @@ export function ProjectsTable({
                   <FolderOpen className="h-4 w-4 transition-colors group-hover:text-black" />
                 </Link>
               </td>
-              <TableCell className="text-center">
+              <TableCell className="texte-center">
                 <DeleteProjectButton
                   projectId={project.id}
                   projectName={project.project_name}
@@ -156,7 +165,7 @@ export function ProjectsTable({
 
         <tr>
           <td
-            colSpan={9}
+            colSpan={10}
             className="border-t border-dashed border-slate-700 p-0"
           >
             <form action={createNewProject}>

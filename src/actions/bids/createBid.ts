@@ -17,7 +17,7 @@ export async function createBid(
       project_id: projectId,
       name: input.name,
       version: input.version,
-      status: input.status,
+      status_id: input.status_id,
       currency: input.currency,
       notes: input.notes ?? null,
     })
@@ -37,7 +37,7 @@ export async function createNewBid(projectId: string) {
   await createBid(projectId, {
     name: "New Bid",
     version: 1,
-    status: "Draft",
+    status_id: 1,
     currency: "GBP",
     notes: "",
   });

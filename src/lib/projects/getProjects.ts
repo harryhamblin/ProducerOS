@@ -70,13 +70,9 @@ export async function createProject(input: CreateProjectInput) {
       project_name: input.project_name,
       project_code: input.project_code,
       status_id: input.status_id ?? 1,
-      current_award: input.current_award ?? null,
-      foreign_spend: input.foreign_spend ?? null,
-      shot_count: input.shot_count ?? null,
     })
     .select()
     .single();
-
   if (error) {
     console.error(error);
     throw new Error(JSON.stringify(error));

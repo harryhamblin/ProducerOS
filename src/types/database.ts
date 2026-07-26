@@ -21,10 +21,9 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
-          name: string
           notes: string | null
           project_id: string
-          status: string
+          status_id: number
           thumbnail_url: string | null
           updated_at: string
         }
@@ -34,10 +33,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          name: string
           notes?: string | null
           project_id: string
-          status?: string
+          status_id?: number
           thumbnail_url?: string | null
           updated_at?: string
         }
@@ -47,14 +45,20 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          name?: string
           notes?: string | null
           project_id?: string
-          status?: string
+          status_id?: number
           thumbnail_url?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "assets_production_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "production_statuses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "assets_project_id_fkey"
             columns: ["project_id"]
@@ -70,16 +74,13 @@ export type Database = {
           bid_id: string
           cost_type: string
           created_at: string
-          description: string | null
           foreign_spend: number
           frames: number | null
           id: string
           item_type: Database["public"]["Enums"]["bid_item_type"]
-          name: string | null
           quantity: number
           shot_id: string | null
           sort_order: number
-          thumbnail_url: string | null
           updated_at: string
           vendor_notes: string | null
         }
@@ -88,16 +89,13 @@ export type Database = {
           bid_id: string
           cost_type?: string
           created_at?: string
-          description?: string | null
           foreign_spend?: number
           frames?: number | null
           id?: string
           item_type: Database["public"]["Enums"]["bid_item_type"]
-          name?: string | null
           quantity?: number
           shot_id?: string | null
           sort_order?: number
-          thumbnail_url?: string | null
           updated_at?: string
           vendor_notes?: string | null
         }
@@ -106,16 +104,13 @@ export type Database = {
           bid_id?: string
           cost_type?: string
           created_at?: string
-          description?: string | null
           foreign_spend?: number
           frames?: number | null
           id?: string
           item_type?: Database["public"]["Enums"]["bid_item_type"]
-          name?: string | null
           quantity?: number
           shot_id?: string | null
           sort_order?: number
-          thumbnail_url?: string | null
           updated_at?: string
           vendor_notes?: string | null
         }
@@ -143,6 +138,30 @@ export type Database = {
           },
         ]
       }
+      bid_statuses: {
+        Row: {
+          colour: string
+          created_at: string
+          id: number
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          colour: string
+          created_at?: string
+          id?: never
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          colour?: string
+          created_at?: string
+          id?: never
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       bid_tasks: {
         Row: {
           bid_item_id: string
@@ -151,6 +170,7 @@ export type Database = {
           id: string
           notes: string | null
           task_id: number
+          updated_at: string | null
         }
         Insert: {
           bid_item_id: string
@@ -159,6 +179,7 @@ export type Database = {
           id?: string
           notes?: string | null
           task_id: number
+          updated_at?: string | null
         }
         Update: {
           bid_item_id?: string
@@ -167,6 +188,7 @@ export type Database = {
           id?: string
           notes?: string | null
           task_id?: number
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -193,7 +215,7 @@ export type Database = {
           name: string
           notes: string | null
           project_id: string
-          status: string
+          status_id: number
           updated_at: string
           version: number
         }
@@ -204,7 +226,7 @@ export type Database = {
           name: string
           notes?: string | null
           project_id: string
-          status?: string
+          status_id: number
           updated_at?: string
           version?: number
         }
@@ -215,7 +237,7 @@ export type Database = {
           name?: string
           notes?: string | null
           project_id?: string
-          status?: string
+          status_id?: number
           updated_at?: string
           version?: number
         }
@@ -227,7 +249,32 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bids_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "bid_statuses"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      production_statuses: {
+        Row: {
+          colour: string
+          id: number
+          name: string
+        }
+        Insert: {
+          colour: string
+          id?: number
+          name: string
+        }
+        Update: {
+          colour?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
       }
       project_members: {
         Row: {
@@ -287,6 +334,7 @@ export type Database = {
           id: string
           project_id: string
           task_id: number
+          updated_at: string
         }
         Insert: {
           created_at?: string
@@ -294,6 +342,7 @@ export type Database = {
           id?: string
           project_id: string
           task_id: number
+          updated_at?: string
         }
         Update: {
           created_at?: string
@@ -301,6 +350,7 @@ export type Database = {
           id?: string
           project_id?: string
           task_id?: number
+          updated_at?: string
         }
         Relationships: [
           {
@@ -366,24 +416,6 @@ export type Database = {
           },
         ]
       }
-      shot_statuses: {
-        Row: {
-          colour: string
-          id: number
-          name: string
-        }
-        Insert: {
-          colour: string
-          id?: number
-          name: string
-        }
-        Update: {
-          colour?: string
-          id?: number
-          name?: string
-        }
-        Relationships: []
-      }
       shots: {
         Row: {
           created_at: string
@@ -391,7 +423,8 @@ export type Database = {
           id: string
           project_id: string
           shot_code: string
-          thumbnail: string | null
+          status_id: number
+          thumbnail_url: string | null
           updated_at: string
         }
         Insert: {
@@ -400,7 +433,8 @@ export type Database = {
           id?: string
           project_id: string
           shot_code: string
-          thumbnail?: string | null
+          status_id?: number
+          thumbnail_url?: string | null
           updated_at?: string
         }
         Update: {
@@ -409,10 +443,18 @@ export type Database = {
           id?: string
           project_id?: string
           shot_code?: string
-          thumbnail?: string | null
+          status_id?: number
+          thumbnail_url?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "shots_production_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "production_statuses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "shots_project_id_fkey"
             columns: ["project_id"]

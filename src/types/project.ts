@@ -16,3 +16,12 @@ export type ProjectStatus = {
   name: string;
   colour: string;
 };
+
+export type ProjectSummary = {
+  currentAward: number;
+  foreignSpend: number;
+  labour: number;
+  shotCount: number;
+  assetCount: number;
+  itemCount: number;
+};

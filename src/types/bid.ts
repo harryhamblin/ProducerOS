@@ -1,15 +1,24 @@
 import type { Database } from "@/types/database";
 
+export type BidStatus = {
+  id: number;
+  name: string;
+  colour: string;
+};
+
 export type Bid = {
   id: string;
   project_id: string;
   name: string;
   version: number;
-  status: string;
+  status_id: number;
   currency: string;
   notes: string | null;
-};
+  created_at: string;
+  updated_at: string;
 
+  bid_statuses: BidStatus | null;
+};
 export type Shot =
     Database["public"]["Tables"]["shots"]["Row"];
 
@@ -71,13 +80,15 @@ export type CalculatedBidItem = BidItem & {
   grandTotal: number;
 };
 
-export interface CalculatedBid {
+export type CalculatedBid = Bid & {
   items: CalculatedBidItem[];
 
   totals: {
     itemCount: number;
+    shotCount: number;
+    assetCount: number;
     labourCost: number;
     foreignSpend: number;
     grandTotal: number;
   };
-}
+};

@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { CreateProjectButton } from "@/components/projects/CreateProjectButton";
 import { getForeignSpendPercentage } from "@/lib/project-calculations";
-import { getProjects } from "@/lib/projects/getProjects";
 import { createProject } from "@/lib/projects/getProjects";
 import { createNewProject } from "@/actions/projects/projects";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,8 @@ import { Section } from "@/components/layout/Section";
 import { ProjectsTable } from "@/components/projects/ProjectsTable";
 import { KpiGrid } from "@/components/layout/KpiGrid";
 import { KpiCard } from "@/components/layout/KpiCard";
+import type { ProjectSummary } from "@/types";
+import { getProjectSummaries } from "@/lib/projects/getProjectSummaries";
 
 import type { Metadata } from "next";
 
@@ -25,34 +26,23 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const projects = (await getProjects()).sort((a, b) =>
-    (a.project_name ?? "").localeCompare(b.project_name ?? "", undefined, {
-      sensitivity: "base",
-      numeric: true,
-    })
-  );
+      const projects = await getProjectSummaries();
+      projects.sort((a, b) =>
+        a.project.project_name.localeCompare(
+          b.project.project_name,
+          undefined,
+          {
+            sensitivity: "base",
+            numeric: true,
+          }
+        )
+      );
 
   const currency = new Intl.NumberFormat("en-GB", {
     style: "currency",
     currency: "GBP",
     maximumFractionDigits: 0,
   });
-
-  const projectCount = projects.length;
-
-  const totalAward = projects.reduce(
-    (sum, project) => sum + (project.current_award ?? 0),
-    0
-  );
-
-  const totalItems = projects.reduce(
-    (sum, project) => sum + (project.item_count ?? 0),
-    0
-  );
-
-  const activeProjects = projects.filter(
-    (project) => project.status.name !== "Archived"
-  ).length;
 
   return (
     <PageLayout>
@@ -89,10 +79,10 @@ export default async function ProjectsPage() {
           />
         </KpiGrid>
     <Section>
-  <ProjectsTable
-    projects={projects}
-    createNewProject={createNewProject}
-  />
+    <ProjectsTable
+      projects={projects}
+      createNewProject={createNewProject}
+    />
 </Section>
 </PageLayout>
   );

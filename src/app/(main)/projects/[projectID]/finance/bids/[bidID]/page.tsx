@@ -86,12 +86,20 @@ const assetCount = bidItems.filter(
     bidTasks,
     projectTasks
   );
+  const foreignSpendPercent =
+  calculatedBid.totals.grandTotal > 0
+    ? (
+        (calculatedBid.totals.foreignSpend /
+          calculatedBid.totals.grandTotal) *
+        100
+      ).toFixed(1)
+    : "0.0";
 
   return (
     <PageLayout>
       <DetailHeader
         title={bid.name}
-        subtitle={bid.status}
+        subtitle={'${bid.status_id}$'}
         breadcrumbs={[
           {
             label: "Projects",
@@ -111,36 +119,29 @@ const assetCount = bidItems.filter(
         ]}
       />
 
-      <KpiGrid>
-        <KpiCard
-          label="Items"
-          value={calculatedBid.totals.itemCount.toLocaleString()}
-        />
+<KpiGrid>
+    <KpiCard
+      label="Shots"
+      value={shotCount}
+    />
 
-        <KpiCard
-          label="Foreign Spend"
-          value={formatCurrency(calculatedBid.totals.foreignSpend)}
-        />
+    <KpiCard
+      label="Assets"
+      value={assetCount}
+    />
 
-        <KpiCard
-          label="Foreign Spend %"
-          value={
-            calculatedBid.totals.grandTotal > 0
-              ? `${(
-                  (calculatedBid.totals.foreignSpend /
-                    calculatedBid.totals.grandTotal) *
-                  100
-                ).toFixed(1)}%`
-              : "0.0%"
-          }
-        />
+    <KpiCard
+      label="Foreign Spend"
+      value={formatCurrency(calculatedBid.totals.foreignSpend)}
+      subValue={`/ ${foreignSpendPercent}%`}
+    />
 
-        <KpiCard
-          label="Total Cost"
-          value={formatCurrency(calculatedBid.totals.grandTotal)}
-          borderRight={false}
-        />
-      </KpiGrid>
+    <KpiCard
+      label="Total Cost"
+      value={formatCurrency(calculatedBid.totals.grandTotal)}
+      borderRight={false}
+    />
+</KpiGrid>
 <div className="mb-6 flex gap-2">
 
 <Button

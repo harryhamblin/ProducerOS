@@ -1,28 +1,36 @@
-interface KpiCardProps {
+type KpiCardProps = {
   label: string;
-  value: React.ReactNode;
+  value: string | number;
+  subValue?: string;
   borderRight?: boolean;
-}
+};
 
 export function KpiCard({
   label,
   value,
+  subValue,
   borderRight = true,
 }: KpiCardProps) {
+  const displayValue =
+    typeof value === "number"
+      ? value.toLocaleString()
+      : value;
+
   return (
     <div
-      className={[
-        "px-6 py-5",
-        borderRight ? "border-r border-slate-800" : "",
-      ].join(" ")}
+      className={`
+        flex flex-col justify-center
+        px-6 py-5
+        ${borderRight ? "border-r border-border" : ""}
+      `}
     >
-      <p className="text-xs uppercase tracking-wide text-slate-400">
+      <p className="text-sm text-white">
         {label}
       </p>
 
-      <div className="mt-2 text-3xl font-semibold text-white">
-        {value}
-      </div>
+      <p className="mt-1 text-3xl font-semibold tracking-tight">
+        {displayValue} {subValue}
+      </p>
     </div>
   );
 }

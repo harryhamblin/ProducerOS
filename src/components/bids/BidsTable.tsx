@@ -21,6 +21,18 @@ export function ProjectBidsTable({
   currency,
   createNewBid,
 }: ProjectBidsTableProps) {
+console.log(
+  JSON.stringify(
+    bids.map((b) => ({
+      id: b.id,
+      name: b.name,
+      status_id: b.status_id,
+      bid_statuses: b.bid_statuses,
+    })),
+    null,
+    2
+  )
+);
   return (
     <table className="w-full border-collapse text-sm">
       <thead className="sticky top-0 z-10 bg-slate-950">
@@ -28,23 +40,15 @@ export function ProjectBidsTable({
           <th className="px-6 py-3 text-left font-medium text-slate-400">
             Bid Name
           </th>
-
           <th className="px-4 py-3 text-left font-medium text-slate-400">
-            Version
+            Description
           </th>
-
           <th className="px-4 py-3 text-left font-medium text-slate-400">
             Status
           </th>
-
-          <th className="px-4 py-3 text-left font-medium text-slate-400">
-            Items
-          </th>
-
           <th className="px-4 py-3 text-left font-medium text-slate-400">
             Foreign Spend
           </th>
-
           <th className="px-6 py-3 text-left font-medium text-slate-400">
             Total
           </th>
@@ -70,7 +74,6 @@ export function ProjectBidsTable({
             key={bid.id}
             className="border-b border-slate-800 transition-colors hover:bg-slate-900/40"
           >
-
             <td className="px-4 py-3">
               <EditableCell
                 table="bids"
@@ -95,8 +98,8 @@ export function ProjectBidsTable({
 
             <td className="px-4 py-3">
               <StatusBadge
-                name={bid.status?.name ?? "Unknown"}
-                colour={bid.status?.colour ?? "#64748b"}
+                name={bid.bid_statuses?.name ?? "Unknown"}
+                colour={bid.bid_statuses?.colour ?? "#64748b"}
               />
             </td>
 

@@ -58,25 +58,33 @@ export default async function ProjectPage({ params }: Props) {
     currency: "GBP",
     maximumFractionDigits: 0,
   });
-const itemCount = bids.reduce(
-  (sum, bid) => sum + (bid.totals.itemCount ?? 0),
-  0
-);
+  const awardedBids = bids.filter(
+    (bid) => bid.status_id === 2
+  );
 
-const labour = bids.reduce(
-  (sum, bid) => sum + (bid.totals.labourCost ?? 0),
-  0
-);
+  const summary = awardedBids.reduce(
+    (acc, bid) => {
+      acc.itemCount += bid.totals.itemCount ?? 0;
+      acc.labour += bid.totals.labourCost ?? 0;
+      acc.foreignSpend += bid.totals.foreignSpend ?? 0;
+      acc.totalAward += bid.totals.grandTotal ?? 0;
 
-const foreignSpend = bids.reduce(
-  (sum, bid) => sum + (bid.totals.foreignSpend ?? 0),
-  0
-);
+      return acc;
+    },
+    {
+      itemCount: 0,
+      labour: 0,
+      foreignSpend: 0,
+      totalAward: 0,
+    }
+  );
 
-const totalAward = bids.reduce(
-  (sum, bid) => sum + (bid.totals.grandTotal ?? 0),
-  0
-);
+const {
+  itemCount,
+  labour,
+  foreignSpend,
+  totalAward,
+} = summary;
   return (
     <PageLayout>
       <DetailHeader

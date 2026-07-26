@@ -24,8 +24,9 @@ export async function getCalculatedBids(projectID: string) {
       );
 
       return {
-        ...bid,
-        totals: calculated.totals,
+      ...bid,
+      items: calculated.items,
+      totals: calculated.totals,
       };
     })
   );

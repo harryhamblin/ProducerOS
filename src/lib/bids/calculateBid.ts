@@ -39,6 +39,8 @@ export function calculateBid({
   let labourCost = 0;
   let foreignSpend = 0;
   let grandTotal = 0;
+  let shotCount = 0;
+  let assetCount = 0;
 
   for (const item of items) {
     let labourCostForItem = 0;
@@ -67,12 +69,22 @@ export function calculateBid({
       labourCost: labourCostForItem,
       grandTotal: grandTotalForItem,
     });
+    
+    if (item.shot) {
+      shotCount++;
+    }
+
+    if (item.asset) {
+      assetCount++;
+    }
   }
 
   return {
     items: calculatedItems,
     totals: {
       itemCount: calculatedItems.length,
+      shotCount,
+      assetCount,
       labourCost,
       foreignSpend,
       grandTotal,
